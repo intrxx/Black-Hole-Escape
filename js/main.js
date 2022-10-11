@@ -1,5 +1,6 @@
 import Phaser from 'phaser'
 import PreloadGame from 'PreloadGame'
+import BoardScene from 'BoardScene'
 
 
 const config = {
@@ -14,7 +15,8 @@ const config = {
     },
 
     scene: [
-        PreloadGame
+        PreloadGame,
+        BoardScene
     ]
 }
 

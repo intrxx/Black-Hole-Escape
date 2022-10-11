@@ -4,7 +4,7 @@ export default class PreloadGame extends Phaser.Scene
 {
     constructor()
     {
-        super('PreloadGame')
+        super('PreloadGame');
     }
 
     preload()
@@ -14,6 +14,6 @@ export default class PreloadGame extends Phaser.Scene
 
     create()
     {
-        
+        this.Scene.start('BoardScene');
     }
 }
