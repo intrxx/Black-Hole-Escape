@@ -1,23 +1,20 @@
-import Phaser from 'phaser'
-import PreloadGame from 'PreloadGame'
-import BoardScene from 'BoardScene'
+import PreloadGame from './PreloadGame.js'
+import BoardScene from './BoardScene.js'
 
 
-const config = {
+const config = 
+    {
     type: Phaser.AUTO,
     width: 1280,
     height: 720,
-    physics: {
-        default: 'arcade',
-        arcade: {
-            garvity: {y: 150}
-        }
-    },
+    backgroundColor: '#333333',
+    }
 
-    scene: [
+    scene: 
+    [
         PreloadGame,
         BoardScene
     ]
-}
+
 
 export default new Phaser.Game(config)
