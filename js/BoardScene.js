@@ -46,7 +46,6 @@ export default class BoardScene extends Phaser.Scene
                             var zone = this.add.zone(125 + offsetx, 74 + offsety, 50, 50).setRectangleDropZone(100, 100);  
                             offsety += 115;
                             
-    
                             var graphics = this.add.graphics();
                             graphics.lineStyle(2, 0xffff00);
                             graphics.strokeRect(zone.x - zone.input.hitArea.width / 2, zone.y - zone.input.hitArea.height / 2, zone.input.hitArea.width, zone.input.hitArea.height);
@@ -66,7 +65,6 @@ export default class BoardScene extends Phaser.Scene
                             var zone = this.add.zone(730 + offsetx, 74 + offsety, 50, 50).setRectangleDropZone(100, 100);  
                             offsety += 115;
                             
-    
                             var graphics = this.add.graphics();
                             graphics.lineStyle(2, 0xffff00);
                             graphics.strokeRect(zone.x - zone.input.hitArea.width / 2, zone.y - zone.input.hitArea.height / 2, zone.input.hitArea.width, zone.input.hitArea.height);
@@ -86,7 +84,6 @@ export default class BoardScene extends Phaser.Scene
                             var zone = this.add.zone(125 + offsetx, 598 + offsety, 50, 50).setRectangleDropZone(100, 100);  
                             offsety += 115;
                             
-    
                             var graphics = this.add.graphics();
                             graphics.lineStyle(2, 0xffff00);
                             graphics.strokeRect(zone.x - zone.input.hitArea.width / 2, zone.y - zone.input.hitArea.height / 2, zone.input.hitArea.width, zone.input.hitArea.height);
@@ -106,7 +103,6 @@ export default class BoardScene extends Phaser.Scene
                             var zone = this.add.zone(730 + offsetx, 598 + offsety, 50, 50).setRectangleDropZone(100, 100);  
                             offsety += 115;
                             
-    
                             var graphics = this.add.graphics();
                             graphics.lineStyle(2, 0xffff00);
                             graphics.strokeRect(zone.x - zone.input.hitArea.width / 2, zone.y - zone.input.hitArea.height / 2, zone.input.hitArea.width, zone.input.hitArea.height);
