@@ -1,4 +1,7 @@
-import RockDraggable from "../js/RockDraggable.js";
+import Tile from "../js/Tile.js";
+import PawnBase from "./PawnBase.js";
+import Player from "../js/Player.js";
+import AI from "../js/AI.js"
 
 export default class BoardScene extends Phaser.Scene 
 {
@@ -12,231 +15,136 @@ export default class BoardScene extends Phaser.Scene
         //Loading Assets
         //Boards
         this.load.image('BlackBoard', '../assets/BlackBoard.png');
-        this.load.image('WhiteBoard', '../assets/WhiteBoard.png');
 
         //Stones
-        this.load.image('WhiteStone1', '../assets/WhiteStone1.png');
-        this.load.image('WhiteStone2', '../assets/WhiteStone2.png');
-        this.load.image('BlackStone1', '../assets/BlackStone1.png');
-        this.load.image('BlackStone2', '../assets/BlackStone2.png');
+        this.load.image('WhiteStone', '../assets/WhiteStone1.png');
+        this.load.image('BlackStone', '../assets/BlackStone1.png');
 
         //Others
-        this.load.image('Rope', '../assets/Rope.png');
+        this.load.image('Tile', '../assets/TestTile.png');
+
+        //Buttons
+        this.load.image('PvP', '../assets/PvP.png');
+        this.load.image('PvAI', '../assets/PvAI.png');
+        this.load.image('AIvAI', '../assets/AIvAI.png');
+
+
     }
 
     create() 
     {
-        //Boards
         this.add.image(300, 245, 'BlackBoard').setScale(0.9);
-        this.add.image(900, 245, 'WhiteBoard').setScale(0.9);
-        this.add.image(300, 770, 'BlackBoard').setScale(0.9);
-        this.add.image(900, 770, 'WhiteBoard').setScale(0.9);
-
-        //Others
-        this.add.image(610,505, 'Rope');
     
-        //Dropzones
-            var offsetx = 0;
-            var offsety = 0;
-    
-            for (var i = 0; i < 4; i++)
-                {
-                    for (var y = 0; y < 4; y++) 
-                        {
-                            var zone = this.add.zone(125 + offsetx, 74 + offsety, 50, 50).setRectangleDropZone(100, 100);  
-                            offsety += 115;
-                            
-                            var graphics = this.add.graphics();
-                            graphics.lineStyle(2, 0xffff00);
-                            graphics.strokeRect(zone.x - zone.input.hitArea.width / 2, zone.y - zone.input.hitArea.height / 2, zone.input.hitArea.width, zone.input.hitArea.height);
-    
-                    }
-                    offsetx += 115;
-                    offsety = 0;
-                }
+        this.bGameHasStarted = false;
 
-                offsetx = 0;
-                offsety = 0;
+        this.PvP = this.add.image(800, 100, 'PvP').setInteractive();
+        this.PvP.on('pointerdown', () => {
+            this.bGameHasStarted = true;
 
-                for (var i = 0; i < 4; i++)
-                {
-                    for (var y = 0; y < 4; y++) 
-                        {
-                            var zone = this.add.zone(730 + offsetx, 74 + offsety, 50, 50).setRectangleDropZone(100, 100);  
-                            offsety += 115;
-                            
-                            var graphics = this.add.graphics();
-                            graphics.lineStyle(2, 0xffff00);
-                            graphics.strokeRect(zone.x - zone.input.hitArea.width / 2, zone.y - zone.input.hitArea.height / 2, zone.input.hitArea.width, zone.input.hitArea.height);
-    
-                    }
-                    offsetx += 115;
-                    offsety = 0;
-                }
+            this.numberofAI = 0;
+            this.startGame(0);
 
-                offsetx = 0;
-                offsety = 0;
+            
+        });
 
-                for (var i = 0; i < 4; i++)
-                {
-                    for (var y = 0; y < 4; y++) 
-                        {
-                            var zone = this.add.zone(125 + offsetx, 598 + offsety, 50, 50).setRectangleDropZone(100, 100);  
-                            offsety += 115;
-                            
-                            var graphics = this.add.graphics();
-                            graphics.lineStyle(2, 0xffff00);
-                            graphics.strokeRect(zone.x - zone.input.hitArea.width / 2, zone.y - zone.input.hitArea.height / 2, zone.input.hitArea.width, zone.input.hitArea.height);
-    
-                    }
-                    offsetx += 115;
-                    offsety = 0;
-                }
+        this.PvP = this.add.image(800, 200, 'PvAI').setInteractive();
+        this.PvP.on('pointerdown', () => {
+            this.bGameHasStarted = true;
 
-                offsetx = 0;
-                offsety = 0;
+            this.numberofAI = 1;
+            this.startGame(1);
+        });
 
-                for (var i = 0; i < 4; i++)
-                {
-                    for (var y = 0; y < 4; y++) 
-                        {
-                            var zone = this.add.zone(730 + offsetx, 598 + offsety, 50, 50).setRectangleDropZone(100, 100);  
-                            offsety += 115;
-                            
-                            var graphics = this.add.graphics();
-                            graphics.lineStyle(2, 0xffff00);
-                            graphics.strokeRect(zone.x - zone.input.hitArea.width / 2, zone.y - zone.input.hitArea.height / 2, zone.input.hitArea.width, zone.input.hitArea.height);
-    
-                    }
-                    offsetx += 115;
-                    offsety = 0;
-                }
+        this.PvP = this.add.image(800, 300, 'AIvAI').setInteractive();
+        this.PvP.on('pointerdown', () => {
+            this.bGameHasStarted = true;
 
-
-            //Rocks
-            var LocationX = 125;
-            for (let i = 0; i < 4; i++) {
-        
-                
-                var rock = this.add.image(LocationX, 72, 'WhiteStone1').setInteractive().setScale(0.8);
-                        
-                this.input.setDraggable(rock);
-
-                LocationX += 115;
-            }
-
-            for (let i = 0; i < 4; i++) {
-        
-                
-                var rock = this.add.image(145 + LocationX, 72, 'WhiteStone1').setInteractive().setScale(0.8);
-                        
-                this.input.setDraggable(rock);
-
-                LocationX += 115;
-            }
-
-            LocationX = 0;
-            for (let i = 0; i < 4; i++) {
-        
-                
-                var rock = this.add.image(125 + LocationX, 600, 'WhiteStone1').setInteractive().setScale(0.8);
-                        
-                this.input.setDraggable(rock);
-
-                LocationX += 115;
-            }
-
-            for (let i = 0; i < 4; i++) {
-        
-                
-                var rock = this.add.image(270 + LocationX, 600, 'WhiteStone1').setInteractive().setScale(0.8);
-                        
-                this.input.setDraggable(rock);
-
-                LocationX += 115;
-            }
-
-            LocationX = 0;
-            for (let i = 0; i < 4; i++) {
-        
-                
-                var rock = this.add.image(125 + LocationX, 420, 'BlackStone1').setInteractive().setScale(0.8);
-                        
-                this.input.setDraggable(rock);
-
-                LocationX += 115;
-            }
-
-            for (let i = 0; i < 4; i++) {
-        
-                
-                var rock = this.add.image(270 + LocationX, 420, 'BlackStone1').setInteractive().setScale(0.8);
-                        
-                this.input.setDraggable(rock);
-
-                LocationX += 115;
-            }
-
-            LocationX = 0;
-            for (let i = 0; i < 4; i++) {
-        
-                
-                var rock = this.add.image(125 + LocationX, 940, 'BlackStone1').setInteractive().setScale(0.8);
-                        
-                this.input.setDraggable(rock);
-
-                LocationX += 115;
-            }
-
-            for (let i = 0; i < 4; i++) {
-        
-                
-                var rock = this.add.image(270 + LocationX, 940, 'BlackStone1').setInteractive().setScale(0.8);
-                        
-                this.input.setDraggable(rock);
-
-                LocationX += 115;
-            }
-
-        this.input.on('dragstart',function(pointer, gameObject) {
-            this.children.bringToTop(gameObject);
-            }, this);
-        
-        this.input.on('drag', function(pointer, gameObject, dragX, dragY) {
-            gameObject.x = dragX;
-            gameObject.y = dragY;
-            });
-
-        this.input.on('dragenter', function (pointer, gameObject, dropZone) {
-            graphics.clear();
-            graphics.lineStyle(2, 0x00ffff);
-            graphics.strokeRect(zone.x - zone.input.hitArea.width / 2, zone.y - zone.input.hitArea.height / 2, zone.input.hitArea.width, zone.input.hitArea.height);
-            });
-        
-        this.input.on('dragleave', function (pointer, gameObject, dropZone) {
-            graphics.clear();
-            graphics.lineStyle(2, 0xffff00);
-            graphics.strokeRect(zone.x - zone.input.hitArea.width / 2, zone.y - zone.input.hitArea.height / 2, zone.input.hitArea.width, zone.input.hitArea.height);
-            });
-        
-        this.input.on('drop', function (pointer, gameObject, dropZone) {
-            gameObject.x = dropZone.x;
-            gameObject.y = dropZone.y;
-            });
-        
-        this.input.on('dragend', function (pointer, gameObject, dropped) {
-        
-            if (!dropped)
-            {
-                gameObject.x = gameObject.input.dragStartX;
-                gameObject.y = gameObject.input.dragStartY;
-            }  
-            graphics.clear();
-            graphics.lineStyle(2, 0xffff00);
-            graphics.strokeRect(zone.x - zone.input.hitArea.width / 2, zone.y - zone.input.hitArea.height / 2, zone.input.hitArea.width, zone.input.hitArea.height);
-            });
-
+            this.numberofAI = 2;
+            this.startGame(2);
+        });
+            
+        this.numberOfGame = 0;
     }
 
-    
-}
+    createBoard(numberOfColumns) 
+    {
+        let offSetX = 0;
+		let offSetY = 0;
+
+		this.boardArray = Array.from(Array(5), () => new Array(5));
+
+		this.arrayXIndex = 0;
+		this.arrayYIndex = 0;
+
+		this.numberOfPawns = 0;
+
+        for(let i = 0; i < numberOfColumns; i++)
+        {
+			this.arrayXIndex = 0;
+
+            for (let j = 0; j < numberOfColumns; j++)
+            {
+                this.tile = new Tile(this, offSetX + 125, offSetY + 74, "Tile");
+
+                this.tile.sprite.setInteractive();
+
+                this.tile.XOffset = offSetX + 125;
+				this.tile.YOffset = offSetY + 74;
+
+            
+                this.tile.indexX = j;
+				this.tile.indexY = i;
+                this.boardArray[j][i] = this.tile;
+
+                offSetY += 115;
+				this.arrayXIndex++;
+            }
+                offSetY = 0;
+                offSetX += 115;
+			    this.arrayYIndex++;
+			}
+
+            this.boardArray[0][0].PawnBase = new PawnBase(this, this.boardArray[0][0].XOffset, this.boardArray[0][0].YOffset, 'WhiteStone', this.scene.player1);
+            this.boardArray[1][1].PawnBase = new PawnBase(this, this.boardArray[1][1].XOffset, this.boardArray[1][1].YOffset, 'WhiteStone', this.scene.player1);
+            this.boardArray[0][4].PawnBase = new PawnBase(this, this.boardArray[0][4].XOffset, this.boardArray[0][4].YOffset, 'WhiteStone', this.scene.player1);
+            this.boardArray[1][3].PawnBase = new PawnBase(this, this.boardArray[1][3].XOffset, this.boardArray[1][3].YOffset, 'WhiteStone', this.scene.player1);
+
+            this.boardArray[4][0].PawnBase = new PawnBase(this, this.boardArray[4][0].XOffset, this.boardArray[4][0].YOffset, 'BlackStone', this.scene.player2);
+            this.boardArray[3][1].PawnBase = new PawnBase(this, this.boardArray[3][1].XOffset, this.boardArray[3][1].YOffset, 'BlackStone', this.scene.player2);
+            this.boardArray[3][3].PawnBase = new PawnBase(this, this.boardArray[3][3].XOffset, this.boardArray[3][3].YOffset, 'BlackStone', this.scene.player2);
+            this.boardArray[4][4].PawnBase = new PawnBase(this, this.boardArray[4][4].XOffset, this.boardArray[4][4].YOffset, 'BlackStone', this.scene.player2);
+        
+        }
+
+        startGame(numberOfAI)
+        {
+            this.numberOfGames++;
+               
+            this.createBoard(5);
+            this.score = 1;
+            this.scoreOwner = null;
+
+            if(numberOfAI == 0) 
+            {
+                this.player1 = new Player(this, 'Player1');
+                this.player2 = new Player(this, 'Player2');
+                
+            }
+            
+            if(numberOfAI == 1)
+            {
+                this.player1 = new Player(this, 'Player1');
+                this.AI1 = new AI(this, 'BlackStone', 'AI1');
+            }
+
+            if(numberOfAI == 2)
+            {
+                this.AI1 = new AI(this, 'WhiteStone', 'AI1');
+                this.AI2 = new AI(this, 'BlackStone', 'AI2');
+            }
+
+            
+        }
+    }
+
+
