@@ -22,23 +22,48 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
 		    if(this.scene.bGameHasStarted == false) { return;}
 			if(this.PawnBase == null && this.scene.player1.numberOfMoves > 0)
 			{
-				this.PawnBase = new PawnBase(this.scene, this.XOffset, this.YOffset, 'WhiteStone', this.scene.player1);
+                if(this.scene.player1.bIsFirstTilePlaced == false) 
+                {
+                    this.PawnBase1 = new PawnBase(this.scene, this.XOffset, this.YOffset, 'WhiteStone', this.scene.player1);
+                    console.log(this.XOffset, this.YOffset)
+                    this.scene.player1.bIsFirstTilePlaced = true;
+                } 
+                else if((this.scene.player1.bIsFirstTilePlaced = true))
+                {
+                
+                    this.PawnBase = new PawnBase(this.scene, this.XOffset, this.YOffset, 'BlackStone', this.scene.player2);
+                    console.log(this.XOffset, this.YOffset)
+                    
+                }
+				
 				this.scene.player1.numberOfMoves--; 
 
                 if(this.scene.player1.numberOfMoves == 0) 
                 {
-                    this.scene.player2.numberOfMoves = 1;
+                    this.scene.player2.numberOfMoves = 2;
+                    this.scene.player1.bIsFirstTilePlaced = false;
                 }
                 
             } 
             else if(this.PawnBase == null && this.scene.player2.numberOfMoves > 0) 
             {
-                this.PawnBase = new PawnBase(this.scene, this.XOffset, this.YOffset, 'BlackStone', this.scene.player2);
+                if(this.scene.player1.bIsFirstTilePlaced == false) 
+                {
+                    this.PawnBase = new PawnBase(this.scene, this.XOffset, this.YOffset, 'WhiteStone', this.scene.player2);
+                    this.scene.player1.bIsFirstTilePlaced = true;
+                } 
+                else
+                {
+                    this.PawnBase = new PawnBase(this.scene, this.XOffset, this.YOffset, 'BlackStone', this.scene.player1);
+                    
+                }
+                
                 this.scene.player2.numberOfMoves--;
 
                 if(this.scene.player2.numberOfMoves == 0) 
                 {
-                    this.scene.player1.numberOfMoves = 1;
+                    this.scene.player1.numberOfMoves = 2;
+                    this.scene.player1.bIsFirstTilePlaced = false;
                 }
             }
 

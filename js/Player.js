@@ -8,6 +8,8 @@ export default class Player
 
 		this.name = name;
 
-		this.numberOfMoves = 1;
+		this.bIsFirstTilePlaced = false;
+
+		this.numberOfMoves = 2;
 	}
 }

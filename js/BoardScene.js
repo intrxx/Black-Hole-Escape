@@ -37,30 +37,31 @@ export default class BoardScene extends Phaser.Scene
     
         this.bGameHasStarted = false;
 
-        this.PvP = this.add.image(800, 100, 'PvP').setInteractive();
+        this.PvP = this.add.image(1000, 100, 'PvP').setInteractive();
         this.PvP.on('pointerdown', () => {
             this.bGameHasStarted = true;
 
             this.numberofAI = 0;
             this.startGame(0);
-
-            
+            this.destroyButtons();
         });
 
-        this.PvP = this.add.image(800, 200, 'PvAI').setInteractive();
-        this.PvP.on('pointerdown', () => {
+        this.PvAI = this.add.image(1000, 200, 'PvAI').setInteractive();
+        this.PvAI.on('pointerdown', () => {
             this.bGameHasStarted = true;
 
             this.numberofAI = 1;
             this.startGame(1);
+            this.destroyButtons();
         });
 
-        this.PvP = this.add.image(800, 300, 'AIvAI').setInteractive();
-        this.PvP.on('pointerdown', () => {
+        this.AIvAI = this.add.image(1000, 300, 'AIvAI').setInteractive();
+        this.AIvAI.on('pointerdown', () => {
             this.bGameHasStarted = true;
 
             this.numberofAI = 2;
             this.startGame(2);
+            this.destroyButtons();
         });
             
         this.numberOfGame = 0;
@@ -71,7 +72,7 @@ export default class BoardScene extends Phaser.Scene
         let offSetX = 0;
 		let offSetY = 0;
 
-		this.boardArray = Array.from(Array(5), () => new Array(5));
+		this.boardArray = Array.from(Array(numberOfColumns), () => new Array(numberOfColumns));
 
 		this.arrayXIndex = 0;
 		this.arrayYIndex = 0;
@@ -104,23 +105,13 @@ export default class BoardScene extends Phaser.Scene
 			    this.arrayYIndex++;
 			}
 
-            this.boardArray[0][0].PawnBase = new PawnBase(this, this.boardArray[0][0].XOffset, this.boardArray[0][0].YOffset, 'WhiteStone', this.scene.player1);
-            this.boardArray[1][1].PawnBase = new PawnBase(this, this.boardArray[1][1].XOffset, this.boardArray[1][1].YOffset, 'WhiteStone', this.scene.player1);
-            this.boardArray[0][4].PawnBase = new PawnBase(this, this.boardArray[0][4].XOffset, this.boardArray[0][4].YOffset, 'WhiteStone', this.scene.player1);
-            this.boardArray[1][3].PawnBase = new PawnBase(this, this.boardArray[1][3].XOffset, this.boardArray[1][3].YOffset, 'WhiteStone', this.scene.player1);
-
-            this.boardArray[4][0].PawnBase = new PawnBase(this, this.boardArray[4][0].XOffset, this.boardArray[4][0].YOffset, 'BlackStone', this.scene.player2);
-            this.boardArray[3][1].PawnBase = new PawnBase(this, this.boardArray[3][1].XOffset, this.boardArray[3][1].YOffset, 'BlackStone', this.scene.player2);
-            this.boardArray[3][3].PawnBase = new PawnBase(this, this.boardArray[3][3].XOffset, this.boardArray[3][3].YOffset, 'BlackStone', this.scene.player2);
-            this.boardArray[4][4].PawnBase = new PawnBase(this, this.boardArray[4][4].XOffset, this.boardArray[4][4].YOffset, 'BlackStone', this.scene.player2);
-        
         }
 
         startGame(numberOfAI)
         {
             this.numberOfGames++;
                
-            this.createBoard(5);
+            this.createBoard(7);
             this.score = 1;
             this.scoreOwner = null;
 
@@ -144,6 +135,13 @@ export default class BoardScene extends Phaser.Scene
             }
 
             
+        }
+
+        destroyButtons()
+        {
+            this.PvP.destroy();
+            this.AIvAI.destroy();
+            this.PvAI.destroy();
         }
     }
 
