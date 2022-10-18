@@ -110,15 +110,4 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
 
     });
     }
-
-    AddIndexes()
-    {
-        this.OldXindex = this.indexX;
-        this.OldYindex = this.indexY;
-    }
-
-    GetOldXindex() 
-    {
-       return this.OldXindex;
-    }
 }
