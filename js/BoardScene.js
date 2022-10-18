@@ -143,6 +143,11 @@ export default class BoardScene extends Phaser.Scene
             this.AIvAI.destroy();
             this.PvAI.destroy();
         }
+
+        gameOver()
+        {
+            console.log("Game over")
+        }
     }
 
 

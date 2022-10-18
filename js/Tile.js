@@ -1,5 +1,7 @@
 import PawnBase from "../js/PawnBase.js";
 
+let OldXindex = 0;
+let OldYindex = 0;
 export default class Tile extends Phaser.Physics.Arcade.Sprite 
 {
     constructor(scene, x, y, sprite)
@@ -22,22 +24,40 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
 		    if(this.scene.bGameHasStarted == false) { return;}
 			if(this.PawnBase == null && this.scene.player1.numberOfMoves > 0)
 			{
+                console.log("Tura Pierwszego");
                 if(this.scene.player1.bIsFirstTilePlaced == false) 
                 {
-                    this.PawnBase1 = new PawnBase(this.scene, this.XOffset, this.YOffset, 'WhiteStone', this.scene.player1);
-                    console.log(this.XOffset, this.YOffset)
-                    this.scene.player1.bIsFirstTilePlaced = true;
-                } 
-                else if((this.scene.player1.bIsFirstTilePlaced = true))
-                {
-                
-                    this.PawnBase = new PawnBase(this.scene, this.XOffset, this.YOffset, 'BlackStone', this.scene.player2);
-                    console.log(this.XOffset, this.YOffset)
-                    
-                }
-				
-				this.scene.player1.numberOfMoves--; 
+                    this.PawnBase = new PawnBase(this.scene, this.XOffset, this.YOffset, 'WhiteStone', this.scene.player1);
+                    this.scene.numberOfPawns++;
 
+                    OldXindex = this.indexX;
+                    OldYindex = this.indexY;
+                    
+                    this.scene.player1.bIsFirstTilePlaced = true;
+                    this.scene.player1.numberOfMoves--; 
+
+                    if(this.scene.numberOfPawns == 48)
+					{
+						this.scene.gameOver();
+					}
+                } 
+                else if((this.scene.player1.bIsFirstTilePlaced = true && this.PawnBase == null) && ((OldXindex == this.indexX && OldYindex + 1 == this.indexY) ||  (OldYindex == this.indexY && OldXindex + 1 == this.indexX) || (OldXindex == this.indexX && OldYindex - 1 == this.indexY) ||  (OldYindex == this.indexY && OldXindex - 1 == this.indexX)))
+                {
+                    this.PawnBase = new PawnBase(this.scene, this.XOffset, this.YOffset, 'BlackStone', this.scene.player2);
+                    this.scene.numberOfPawns++;
+
+                    this.scene.player1.numberOfMoves--; 
+
+                    if(this.scene.numberOfPawns == 48)
+					{
+						this.scene.gameOver();
+					}
+                } 
+                else 
+                {
+                    console.log("Nie mozna postawic kloca")
+                }
+                
                 if(this.scene.player1.numberOfMoves == 0) 
                 {
                     this.scene.player2.numberOfMoves = 2;
@@ -47,19 +67,40 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
             } 
             else if(this.PawnBase == null && this.scene.player2.numberOfMoves > 0) 
             {
+                console.log("Tura Drugiego");
                 if(this.scene.player1.bIsFirstTilePlaced == false) 
                 {
                     this.PawnBase = new PawnBase(this.scene, this.XOffset, this.YOffset, 'WhiteStone', this.scene.player2);
+                    this.scene.numberOfPawns++;
                     this.scene.player1.bIsFirstTilePlaced = true;
+
+                    OldXindex = this.indexX;
+                    OldYindex = this.indexY;
+                    
+                    this.scene.player2.numberOfMoves--;
+
+                    if(this.scene.numberOfPawns == 48)
+					{
+						this.scene.gameOver();
+					}
                 } 
-                else
+                else if((this.scene.player1.bIsFirstTilePlaced = true && this.PawnBase == null) && ((OldXindex == this.indexX && OldYindex + 1 == this.indexY) ||  (OldYindex == this.indexY && OldXindex + 1 == this.indexX) || (OldXindex == this.indexX && OldYindex - 1 == this.indexY) ||  (OldYindex == this.indexY && OldXindex - 1 == this.indexX)))
                 {
                     this.PawnBase = new PawnBase(this.scene, this.XOffset, this.YOffset, 'BlackStone', this.scene.player1);
+                    this.scene.numberOfPawns++;
                     
+                    this.scene.player2.numberOfMoves--;
+
+                    if(this.scene.numberOfPawns == 48)
+					{
+						this.scene.gameOver();
+					}
+                }
+                else 
+                {
+                    console.log("Nie mozna postawic kloca")
                 }
                 
-                this.scene.player2.numberOfMoves--;
-
                 if(this.scene.player2.numberOfMoves == 0) 
                 {
                     this.scene.player1.numberOfMoves = 2;
@@ -68,5 +109,16 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
             }
 
     });
+    }
+
+    AddIndexes()
+    {
+        this.OldXindex = this.indexX;
+        this.OldYindex = this.indexY;
+    }
+
+    GetOldXindex() 
+    {
+       return this.OldXindex;
     }
 }

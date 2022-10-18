@@ -9,4 +9,6 @@ export default class PawnBase extends Phaser.Physics.Arcade.Sprite {
 
 		scene.add.image(x, y, sprite).setScale(0.8);
 	}
+
+	
 }
