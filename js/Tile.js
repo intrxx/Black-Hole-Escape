@@ -24,15 +24,15 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
 		    if(this.scene.bGameHasStarted == false) { return;}
 			if(this.PawnBase == null && this.scene.player1.numberOfMoves > 0)
 			{
-                console.log("Tura Pierwszego");
+                //scene.add.image(1050, 100, 'WhitePlayerNotification').setScale(0.9);
                 if(this.scene.player1.bIsFirstTilePlaced == false) 
                 {
-                    if((this.indexX+1 < 6 && this.scene.boardArray[this.indexX+1][this.indexY].bIsTaken == false) || 
+                    if((this.indexX+1 <= 6 && this.scene.boardArray[this.indexX+1][this.indexY].bIsTaken == false) || 
                     (this.indexX-1 >= 0 && this.scene.boardArray[this.indexX-1][this.indexY].bIsTaken == false) || 
                     (this.indexY-1 >= 0 && this.scene.boardArray[this.indexX][this.indexY-1].bIsTaken == false) || 
-                    (this.indexY+1 < 6 && this.scene.boardArray[this.indexX][this.indexY+1].bIsTaken == false))
+                    (this.indexY+1 <= 6 && this.scene.boardArray[this.indexX][this.indexY+1].bIsTaken == false))
                     {
-                    this.PawnBase = new PawnBase(this.scene, this.XOffset, this.YOffset, 'WhiteStone', this.scene.player1);
+                    this.PawnBase = new PawnBase(this.scene, this.XOffset, this.YOffset, 'WhitePiece', this.scene.player1);
                     this.scene.numberOfPawns++;
                     this.scene.player1.bIsFirstTilePlaced = true;
 
@@ -41,7 +41,6 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
 
                     this.scene.boardArray[this.indexX][this.indexY].bIsTaken = true;
 
-                    
                     this.scene.player1.numberOfMoves--; 
 
                     if(this.scene.numberOfPawns == 48)
@@ -53,7 +52,7 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
                 else if((this.scene.player1.bIsFirstTilePlaced = true && this.PawnBase == null) && ((OldXindex == this.indexX && OldYindex + 1 == this.indexY) ||  (OldYindex == this.indexY && OldXindex + 1 == this.indexX) || (OldXindex == this.indexX && OldYindex - 1 == this.indexY) ||  (OldYindex == this.indexY && OldXindex - 1 == this.indexX)))
                 {
                     
-                    this.PawnBase = new PawnBase(this.scene, this.XOffset, this.YOffset, 'BlackStone', this.scene.player2);
+                    this.PawnBase = new PawnBase(this.scene, this.XOffset, this.YOffset, 'BlackPiece', this.scene.player2);
                     this.scene.numberOfPawns++;
 
                     this.scene.player1.numberOfMoves--; 
@@ -66,10 +65,6 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
 					}
                     
                 } 
-                else 
-                {
-                    console.log("Nie mozna postawic kloca")
-                }
                 
                 if(this.scene.player1.numberOfMoves == 0) 
                 {
@@ -83,12 +78,12 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
                 console.log("Tura Drugiego");
                 if(this.scene.player1.bIsFirstTilePlaced == false) 
                 {
-                    if((this.indexX+1 < 6 && this.scene.boardArray[this.indexX+1][this.indexY].bIsTaken == false) || 
+                    if((this.indexX+1 <= 6 && this.scene.boardArray[this.indexX+1][this.indexY].bIsTaken == false) || 
                     (this.indexX-1 >= 0 && this.scene.boardArray[this.indexX-1][this.indexY].bIsTaken == false) || 
                     (this.indexY-1 >= 0 && this.scene.boardArray[this.indexX][this.indexY-1].bIsTaken == false) || 
-                    (this.indexY+1 < 6 && this.scene.boardArray[this.indexX][this.indexY+1].bIsTaken == false))
+                    (this.indexY+1 <= 6 && this.scene.boardArray[this.indexX][this.indexY+1].bIsTaken == false))
                     {
-                    this.PawnBase = new PawnBase(this.scene, this.XOffset, this.YOffset, 'WhiteStone', this.scene.player2);
+                    this.PawnBase = new PawnBase(this.scene, this.XOffset, this.YOffset, 'WhitePiece', this.scene.player2);
                     this.scene.numberOfPawns++;
                     this.scene.player1.bIsFirstTilePlaced = true;
 
@@ -107,7 +102,7 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
                 } 
                 else if((this.scene.player1.bIsFirstTilePlaced = true && this.PawnBase == null) && ((OldXindex == this.indexX && OldYindex + 1 == this.indexY) ||  (OldYindex == this.indexY && OldXindex + 1 == this.indexX) || (OldXindex == this.indexX && OldYindex - 1 == this.indexY) ||  (OldYindex == this.indexY && OldXindex - 1 == this.indexX)))
                 {
-                    this.PawnBase = new PawnBase(this.scene, this.XOffset, this.YOffset, 'BlackStone', this.scene.player1);
+                    this.PawnBase = new PawnBase(this.scene, this.XOffset, this.YOffset, 'BlackPiece', this.scene.player1);
                     this.scene.numberOfPawns++;
                     
                     this.scene.player2.numberOfMoves--;
@@ -119,11 +114,7 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
 						this.scene.gameOver();
 					}
                 }
-                else 
-                {
-                    console.log("Nie mozna postawic kloca")
-                }
-                
+               
                 if(this.scene.player2.numberOfMoves == 0) 
                 {
                     this.scene.player1.numberOfMoves = 2;
@@ -131,5 +122,10 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
                 }
             }
     });
+    }
+
+    checkHowManyMovesLeftPossible()
+    {
+        
     }
 }

@@ -14,14 +14,16 @@ export default class BoardScene extends Phaser.Scene
     {
         //Loading Assets
         //Boards
-        this.load.image('BlackBoard', '../assets/BlackBoard.png');
+        this.load.image('Board', '../assets/Board.png');
 
         //Stones
-        this.load.image('WhiteStone', '../assets/WhiteStone1.png');
-        this.load.image('BlackStone', '../assets/BlackStone1.png');
+        this.load.image('WhitePiece', '../assets/WhitePiece.png');
+        this.load.image('BlackPiece', '../assets/BlackPiece.png');
 
         //Others
-        this.load.image('Tile', '../assets/TestTile.png');
+        this.load.image('Tile', '../assets/Tile.png');
+        this.load.image('WhitePlayerNotification','../assets/WhitePlayerNotification.png');
+        this.load.image('BlackPlayerNotification','../assets/BlackPlayerNotification.png');
 
         //Buttons
         this.load.image('PvP', '../assets/PvP.png');
@@ -33,11 +35,11 @@ export default class BoardScene extends Phaser.Scene
 
     create() 
     {
-        this.add.image(300, 245, 'BlackBoard').setScale(0.9);
+        this.add.image(470, 422, 'Board').setScale(0.9);
     
         this.bGameHasStarted = false;
 
-        this.PvP = this.add.image(1000, 100, 'PvP').setInteractive();
+        this.PvP = this.add.image(1050, 100, 'PvP').setInteractive().setScale(0.6);
         this.PvP.on('pointerdown', () => {
             this.bGameHasStarted = true;
 
@@ -46,7 +48,7 @@ export default class BoardScene extends Phaser.Scene
             this.destroyButtons();
         });
 
-        this.PvAI = this.add.image(1000, 200, 'PvAI').setInteractive();
+        this.PvAI = this.add.image(1050, 200, 'PvAI').setInteractive().setScale(0.6);
         this.PvAI.on('pointerdown', () => {
             this.bGameHasStarted = true;
 
@@ -55,7 +57,7 @@ export default class BoardScene extends Phaser.Scene
             this.destroyButtons();
         });
 
-        this.AIvAI = this.add.image(1000, 300, 'AIvAI').setInteractive();
+        this.AIvAI = this.add.image(1050, 300, 'AIvAI').setInteractive().setScale(0.6);
         this.AIvAI.on('pointerdown', () => {
             this.bGameHasStarted = true;
 
@@ -125,13 +127,13 @@ export default class BoardScene extends Phaser.Scene
             if(numberOfAI == 1)
             {
                 this.player1 = new Player(this, 'Player1');
-                this.AI1 = new AI(this, 'BlackStone', 'AI1');
+                this.AI1 = new AI(this, 'BlackPiece', 'AI1');
             }
 
             if(numberOfAI == 2)
             {
-                this.AI1 = new AI(this, 'WhiteStone', 'AI1');
-                this.AI2 = new AI(this, 'BlackStone', 'AI2');
+                this.AI1 = new AI(this, 'WhitePiece', 'AI1');
+                this.AI2 = new AI(this, 'BlackPiece', 'AI2');
             }
 
             
