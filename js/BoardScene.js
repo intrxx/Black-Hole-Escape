@@ -95,8 +95,8 @@ export default class BoardScene extends Phaser.Scene
             
                 this.tile.indexX = j;
 				this.tile.indexY = i;
+                this.tile["bIsTaken"] = false;
                 this.boardArray[j][i] = this.tile;
-
                 offSetY += 115;
 				this.arrayXIndex++;
             }
