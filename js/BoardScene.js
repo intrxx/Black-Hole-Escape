@@ -127,13 +127,13 @@ export default class BoardScene extends Phaser.Scene
             if(numberOfAI == 1)
             {
                 this.player1 = new Player(this, 'Player1');
-                this.AI1 = new AI(this, 'BlackPiece', 'AI1');
+                this.AI1 = new AI(this, 'AI1');
             }
 
             if(numberOfAI == 2)
             {
-                this.AI1 = new AI(this, 'WhitePiece', 'AI1');
-                this.AI2 = new AI(this, 'BlackPiece', 'AI2');
+                this.AI1 = new AI(this, 'AI1');
+                this.AI2 = new AI(this, 'AI2');
             }
 
             
@@ -149,6 +149,28 @@ export default class BoardScene extends Phaser.Scene
         gameOver()
         {
             console.log("Game over")
+        }
+
+        CheckHowManyMovesPossible()
+        {
+        let numberOfMovesLeft = 0;
+            for(let i = 0; i < 7; i++)
+            {
+                for(let j = 0; j < 7; j++)
+                {
+                    if(this.boardArray[j][i].bIsTaken == false)
+                    {
+                        if((j+1 <= 6 && this.boardArray[j+1][i].bIsTaken == false) || 
+                           (j-1 >= 0 && this.boardArray[j-1][i].bIsTaken == false) || 
+                           (i-1 >= 0 && this.boardArray[j][i-1].bIsTaken == false) || 
+                           (i+1 <= 6 && this.boardArray[j][i+1].bIsTaken == false)) 
+                       {
+                         numberOfMovesLeft++;
+                       } 
+                    }   
+                }
+            }
+        return numberOfMovesLeft;
         }
     }
 
