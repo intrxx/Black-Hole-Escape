@@ -39,7 +39,7 @@ export default class BoardScene extends Phaser.Scene
     
         this.bGameHasStarted = false;
 
-        this.PvP = this.add.image(1050, 100, 'PvP').setInteractive().setScale(0.6);
+        this.PvP = this.add.image(1050, 590, 'PvP').setInteractive().setScale(0.6);
         this.PvP.on('pointerdown', () => {
             this.bGameHasStarted = true;
 
@@ -48,7 +48,7 @@ export default class BoardScene extends Phaser.Scene
             this.destroyButtons();
         });
 
-        this.PvAI = this.add.image(1050, 200, 'PvAI').setInteractive().setScale(0.6);
+        this.PvAI = this.add.image(1050, 690, 'PvAI').setInteractive().setScale(0.6);
         this.PvAI.on('pointerdown', () => {
             this.bGameHasStarted = true;
 
@@ -57,7 +57,7 @@ export default class BoardScene extends Phaser.Scene
             this.destroyButtons();
         });
 
-        this.AIvAI = this.add.image(1050, 300, 'AIvAI').setInteractive().setScale(0.6);
+        this.AIvAI = this.add.image(1050, 790, 'AIvAI').setInteractive().setScale(0.6);
         this.AIvAI.on('pointerdown', () => {
             this.bGameHasStarted = true;
 
