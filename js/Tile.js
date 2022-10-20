@@ -60,6 +60,7 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
                     if(this.scene.CheckHowManyMovesPossible() == 0)
 					{
 						this.scene.gameOver();
+                        return;
 					}
                     
                 } 
@@ -106,6 +107,7 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
                     if(this.scene.CheckHowManyMovesPossible() == 0)
 					{
 						this.scene.gameOver();
+                        return;
 					}
                 }
                
@@ -144,7 +146,7 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
                 else if((this.scene.player1.bIsFirstTilePlaced = true && this.PawnBase == null) && ((OldXindex == this.indexX && OldYindex + 1 == this.indexY) ||  (OldYindex == this.indexY && OldXindex + 1 == this.indexX) || (OldXindex == this.indexX && OldYindex - 1 == this.indexY) ||  (OldYindex == this.indexY && OldXindex - 1 == this.indexX)))
                 {
                     
-                    this.PawnBase = new PawnBase(this.scene, this.XOffset, this.YOffset, 'BlackPiece', this.scene.player2);
+                    this.PawnBase = new PawnBase(this.scene, this.XOffset, this.YOffset, 'BlackPiece', this.scene.AI1);
                     this.scene.numberOfPawns++;
 
                     this.scene.player1.numberOfMoves--; 
@@ -155,20 +157,24 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
                     if(this.scene.CheckHowManyMovesPossible() == 0)
 					{
 						this.scene.gameOver();
+                        return;
 					}
 
                     if(this.scene.player1.numberOfMoves == 0) 
                     {
                         this.scene.player1.bIsFirstTilePlaced = false;
 
-                        this.scene.AI1.aiMakeFirstMove(this.scene.AI1);
-
+                        setTimeout(() => this.scene.AI1.aiMakeFirstMove(this.scene.AI1), 200);
+                    
+                        if(this.scene.CheckHowManyMovesPossible() == 0)
+					    {
+						this.scene.gameOver();
+					    }
                         this.scene.player1.numberOfMoves = 2;
                     }
 
                 }
             } 
-            
         }
     });
     }

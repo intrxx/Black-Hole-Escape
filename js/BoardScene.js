@@ -65,6 +65,13 @@ export default class BoardScene extends Phaser.Scene
             this.startGame(2);
             this.destroyButtons();
         });
+
+        this.ResetButton = this.add.image(1050, 100, 'AIvAI').setInteractive().setScale(0.6);
+        this.ResetButton.on('pointerdown', () => {
+            this.bGameHasStarted = false;
+
+            this.scene.restart();
+        });
             
         this.numberOfGame = 0;
     }
@@ -109,6 +116,21 @@ export default class BoardScene extends Phaser.Scene
 
         }
 
+        //doesnt work for now
+        AIvAIGame(FirstAI, SecondAI)
+        {
+            if(this.CheckHowManyMovesPossible() == 0)
+            {
+                this.gameOver();
+            }
+
+            for(let i = 0; i < this.CheckHowManyMovesPossible(); i++)
+            {
+                FirstAI.aiMakeFirstMove(FirstAI)
+            }
+            this.AIvAIGame(SecondAI, FirstAI);
+        }
+
         startGame(numberOfAI)
         {
             this.numberOfGames++;
@@ -134,9 +156,10 @@ export default class BoardScene extends Phaser.Scene
             {
                 this.AI1 = new AI(this, 'AI1');
                 this.AI2 = new AI(this, 'AI2');
+
+                this.AIvAIGame(this.AI1, this.AI2);
             }
 
-            
         }
 
         destroyButtons()
@@ -148,7 +171,7 @@ export default class BoardScene extends Phaser.Scene
 
         gameOver()
         {
-            console.log("Game over")
+            console.log("Game over");
         }
 
         CheckHowManyMovesPossible()
@@ -172,6 +195,8 @@ export default class BoardScene extends Phaser.Scene
             }
         return numberOfMovesLeft;
         }
+
+        
     }
 
 
