@@ -103,6 +103,7 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
                     this.scene.player2.numberOfMoves--;
 
                     this.scene.boardArray[this.indexX][this.indexY].bIsTaken = true;
+                    
                     console.log(this.scene.CheckHowManyMovesPossible())
                     if(this.scene.CheckHowManyMovesPossible() == 0)
 					{
@@ -176,6 +177,7 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
                 }
             } 
         }
+
     });
     }
 }

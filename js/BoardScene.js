@@ -122,6 +122,7 @@ export default class BoardScene extends Phaser.Scene
             if(this.CheckHowManyMovesPossible() == 0)
             {
                 this.gameOver();
+                return;
             }
 
             for(let i = 0; i < this.CheckHowManyMovesPossible(); i++)
