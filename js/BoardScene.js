@@ -173,7 +173,25 @@ export default class BoardScene extends Phaser.Scene
         gameOver()
         {
             console.log("Game over");
+			this.GoThroughBoardCoutingScore();
+			console.log("A1 Score " + this.AI1.score);
+			console.log("A2 Score " + this.AI2.score);
         }
+		
+		GoThroughBoardCoutingScore()
+		{
+			var TempboardArray = Array.from(Array(7), () => new Array(7));
+			for(let y = 0; y < 6; y++)
+			{
+				for(let x = 0; x < 6; x++)
+				{
+					if(this.boardArray[x][y].PawnBase != undefined && TempboardArray[x][y] != 1)
+					{
+						this.boardArray[x][y].PawnBase.CheckScoreSetup(this.boardArray[x][y],1,TempboardArray);		
+					}
+				}	
+			}
+		}
 
         CheckHowManyMovesPossible()
         {
