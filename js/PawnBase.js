@@ -7,6 +7,7 @@ export default class PawnBase extends Phaser.Physics.Arcade.Sprite {
 
 		this.scene = scene;
 		this.owner = owner;
+
 		this.TempScore = 1;
 		
 		this.sprite = scene.add.image(x, y, sprite).setScale(0.9);
@@ -27,7 +28,7 @@ export default class PawnBase extends Phaser.Physics.Arcade.Sprite {
 	{
 	
 		//var TempboardArray = Array.from(Array(7), () => new Array(7));
-		console.log("Y" + tile.indexX +   " X" + tile.indexY);
+		//console.log("Y" + tile.indexX +   " X" + tile.indexY);
 		TempboardArray[tile.indexX][tile.indexY] = 1;
 		this.CheckScore(tile,this.TempScore,TempboardArray)
 	}

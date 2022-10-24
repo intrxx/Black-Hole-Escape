@@ -26,25 +26,29 @@ export default class AI
          {
             this.tile = this.scene.boardArray[randomX][randomY];
             this.scene.boardArray[randomX][randomY].bIsTaken = true;
-
-            console.log("Bialy: " + randomX + " " + randomY);
-
-            console.log("x: " + this.scene.boardArray[randomX][randomY].XOffset)
-            console.log("y: " + this.scene.boardArray[randomX][randomY].YOffset)
-
-            this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'WhitePiece', this.scene.AI1);
-
-            this.aiMakeSecondMove(AI,randomX,randomY);
-            //---------------------------------------------------------------------------------------------------------------------------     
+            
+            if(this.scene.getNumberOfAI() == 1)
+            {
+                this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'WhitePiece', this.scene.player1);
+                
+                
+                this.aiMakeSecondMove(this.scene.AI1, randomX, randomY);  
+            }
+            else if(this.scene.getNumberOfAI() == 2)
+            {
+                this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'WhitePiece', this.scene.AI1);
+                this.aiMakeSecondMove(this.scene.AI2, randomX, randomY);  
+            }
+            
+            
          }
         else if(this.scene.CheckHowManyMovesPossible() > 0)
         {
             this.aiMakeFirstMove(AI);
-           
         }
     }
 
-    aiMakeSecondMove(AI, x, y)
+    aiMakeSecondMove(Owner, x, y)
     {
         let bIsPlaced = false;
         do
@@ -56,8 +60,9 @@ export default class AI
                     {
                         this.tile = this.scene.boardArray[x][y+1];
                         this.scene.boardArray[x][y+1].bIsTaken = true;
-                        console.log(x + " " + (y+1));
-                        this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'BlackPiece', this.scene.AI2);
+                        
+                        this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'BlackPiece', Owner);
+                        
                         bIsPlaced = true;
                     }
                     break;
@@ -66,8 +71,9 @@ export default class AI
                     {
                         this.tile = this.scene.boardArray[x][y-1];
                         this.scene.boardArray[x][y-1].bIsTaken = true;
-                        console.log(x + " " + (y-1));
-                        this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'BlackPiece', this.scene.AI2);
+                        
+                        this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'BlackPiece', Owner);
+                        
                         bIsPlaced = true;
                     }
                     break;
@@ -76,8 +82,9 @@ export default class AI
                     {
                         this.tile = this.scene.boardArray[x+1][y];
                         this.scene.boardArray[x+1][y].bIsTaken = true;
-                        console.log((x+1) + " " + y);
-                        this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'BlackPiece', this.scene.AI2);
+                        
+                        this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'BlackPiece', Owner);
+                        
                         bIsPlaced = true;
                     }
                     break;
@@ -86,13 +93,14 @@ export default class AI
                     {
                         this.tile = this.scene.boardArray[x-1][y];
                         this.scene.boardArray[x-1][y].bIsTaken = true;
-                        console.log((x-1) + " " + y);
-                        this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'BlackPiece', this.scene.AI2);
+                        
+                        this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'BlackPiece', Owner);
+                        
                         bIsPlaced = true;
                     }
                     break;    
                 default:
-                    console.log("Zjebalo sie")
+                    console.log("Fail reading random number")
                     break;
             }
         } while(bIsPlaced != true)

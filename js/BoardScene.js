@@ -3,6 +3,8 @@ import PawnBase from "./PawnBase.js";
 import Player from "../js/Player.js";
 import AI from "../js/AI.js"
 
+let GameOverText;
+let Style;
 export default class BoardScene extends Phaser.Scene 
 {
     constructor()
@@ -29,7 +31,7 @@ export default class BoardScene extends Phaser.Scene
         this.load.image('PvP', '../assets/PvP.png');
         this.load.image('PvAI', '../assets/PvAI.png');
         this.load.image('AIvAI', '../assets/AIvAI.png');
-
+        this.load.image('Restart', '../assets/Restart.png')
 
     }
 
@@ -44,6 +46,7 @@ export default class BoardScene extends Phaser.Scene
             this.bGameHasStarted = true;
 
             this.numberofAI = 0;
+            
             this.startGame(0);
             this.destroyButtons();
         });
@@ -66,7 +69,7 @@ export default class BoardScene extends Phaser.Scene
             this.destroyButtons();
         });
 
-        this.ResetButton = this.add.image(1050, 100, 'AIvAI').setInteractive().setScale(0.6);
+        this.ResetButton = this.add.image(1030, 45, 'Restart').setInteractive().setScale(0.4);
         this.ResetButton.on('pointerdown', () => {
             this.bGameHasStarted = false;
 
@@ -74,6 +77,8 @@ export default class BoardScene extends Phaser.Scene
         });
             
         this.numberOfGame = 0;
+
+        Style = {font: "30px Arial"}
     }
 
     createBoard(numberOfColumns) 
@@ -170,12 +175,35 @@ export default class BoardScene extends Phaser.Scene
             this.PvAI.destroy();
         }
 
+       
         gameOver()
         {
             console.log("Game over");
-			this.GoThroughBoardCoutingScore();
-			console.log("A1 Score " + this.AI1.score);
-			console.log("A2 Score " + this.AI2.score);
+			
+            if(this.numberofAI == 2) 
+            {
+                this.GoThroughBoardCoutingScore();
+                console.log("A1 Score " + this.AI1.score);
+			    console.log("A2 Score " + this.AI2.score);
+                GameOverText = this.add.text(897,350,"Wynik Białego: " + this.AI1.score + "\nWynik Czarnego: " + this.AI2.score, Style);
+            }
+
+            if(this.numberofAI == 1)
+            {
+                this.GoThroughBoardCoutingScore();
+                console.log("A1 Score " + this.player1.score);
+			    console.log("A2 Score " + this.AI1.score);
+                GameOverText = this.add.text(897,350,"Wynik Białego: " + this.player1.score + "\nWynik Czarnego: " + this.AI1.score, Style);
+            }
+
+            if(this.numberofAI == 0)
+            {
+                this.GoThroughBoardCoutingScore();
+                console.log("A1 Score " + this.player1.score);
+			    console.log("A2 Score " + this.player2.score);
+                GameOverText = this.add.text(897,350,"Wynik Białego: " + this.player1.score + "\nWynik Czarnego: " + this.player2.score, Style);
+            }
+			
         }
 		
 		GoThroughBoardCoutingScore()
@@ -215,6 +243,10 @@ export default class BoardScene extends Phaser.Scene
         return numberOfMovesLeft;
         }
 
+        getNumberOfAI()
+        {
+            return this.numberofAI;
+        }
         
     }
 

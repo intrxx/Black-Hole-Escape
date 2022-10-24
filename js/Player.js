@@ -12,4 +12,5 @@ export default class Player
 
 		this.numberOfMoves = 2;
 	}
+
 }
