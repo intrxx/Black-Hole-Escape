@@ -104,5 +104,129 @@ export default class AI
         
     }
 
-    
+    //przykladowa implementacja ruchu
+    aiMakeFirstOptimalMove() 
+    {
+        let optimalScore = -Infinity;
+        let optimalMove;
+
+        for(let i = 0; i < 7; i++)
+        {
+            for(let j = 0; j < 7; j++)
+            {
+                if(this.boardArray[j][i].bIsTaken == false && this.CheckIfAnyFreeTilesAround(j,i))
+                {
+                    //tutaj stawiamy pionka zeby sprawdzic scora
+                    this.tile = this.scene.boardArray[j][i];
+                    
+                    //tutaj sprawdzamy wynik na tym polu
+                    let score = this.minimax(board, 0, false);
+
+                    //w tym momencie musimy cofac ten ruch
+                    this.tile = this.scene.boardArray[j][i];
+
+                    //tutaj przypisujemy ten wynik do najlepszego wyniku jesli jest wiekrzy
+                    if(score > optimalScore)
+                    {
+                        optimalScore = score;
+                        optimalMove = { i, j};
+                    }
+                }   
+            }
+        }
+        this.scene.boardArray[optimalMove.i][optimalMove.j];
+        this.scene.boardArray[optimalMove.i][optimalMove.j].bIsTaken = true;
+
+        this.aiMakeSecondOptimalMove(optimalMove.i, optimalMove.y);
+    }
+
+    aiMakeSecondOptimalMove(x, y)
+    {
+        let optimalScore = -Infinity;
+        let optimalMove;
+
+        if((y+1 <= 6) && (this.scene.boardArray[x][y+1].bIsTaken == false))
+        {
+            //Do the move
+            this.tile = this.scene.boardArray[x][y+1];
+            
+            //Check the score
+            let score = this.minimax(board, 0, false);
+
+            //Undo the move
+            this.tile = this.scene.boardArray[x][y+1];
+            
+            //Bind the score
+            if(score > optimalScore)
+            {
+                optimalScore = score;
+                optimalMove = { i, j};
+            }
+        }
+        
+        if((y-1 >= 0) && (this.scene.boardArray[x][y-1].bIsTaken == false))
+        {
+            //Do the move
+            this.tile = this.scene.boardArray[x][y-1];
+            
+            //Check the score
+            let score = this.minimax(board, 0, false);
+            
+            //Undo the move
+            this.tile = this.scene.boardArray[x][y+1];
+            
+            //Bind the score
+            if(score > optimalScore)
+            {
+                optimalScore = score;
+                optimalMove = { i, j};
+            }
+        }   
+
+        if((x+1 <= 6) && (this.scene.boardArray[x+1][y].bIsTaken == false))
+        {
+            //Do the move
+            this.tile = this.scene.boardArray[x+1][y];
+            
+            //Check the score
+            let score = this.minimax(board, 0, false);
+            
+            //Undo the move
+            this.tile = this.scene.boardArray[x+1][y];
+            
+            //Bind the score
+            if(score > optimalScore)
+            {
+                optimalScore = score;
+                optimalMove = { i, j};
+            }
+        }
+
+        if((x-1 >= 0) && (this.scene.boardArray[x-1][y].bIsTaken == false))
+        {
+            //Do the move
+            this.tile = this.scene.boardArray[x-1][y];
+            
+            //Check the score
+            let score = this.minimax(board, 0, false);
+            
+            //Undo the move
+            this.tile = this.scene.boardArray[x-1][y];
+            
+            //Bind the score
+            if(score > optimalScore)
+            {
+                optimalScore = score;
+                optimalMove = { i, j};
+            }
+        }  
+
+        this.scene.boardArray[optimalMove.i][optimalMove.j];
+        this.scene.boardArray[optimalMove.i][optimalMove.j].bIsTaken = true;
+    }
+
+    minimax(board, depth, isMaximazing)
+    {
+        return 1;
+    }
 }
