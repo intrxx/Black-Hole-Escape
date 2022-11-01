@@ -1,5 +1,3 @@
-import BoardScene from './BoardScene.js'
-
 export default class PawnBase extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y, sprite, owner)
 	{

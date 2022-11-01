@@ -13,16 +13,13 @@ export default class AI
         this.score = 0;
     }
 
-    aiMakeFirstMove(AI)
+    aiMakeFirstRandomMove(AI)
     {   
         let randomX = Phaser.Math.Between(0, 6);
         let randomY = Phaser.Math.Between(0, 6);
 
         if((this.scene.boardArray[randomX][randomY].bIsTaken == false) &&
-        ((randomX+1 <= 6 && this.scene.boardArray[randomX+1][randomY].bIsTaken == false) || 
-         (randomX-1 >= 0 && this.scene.boardArray[randomX-1][randomY].bIsTaken == false) || 
-         (randomY-1 >= 0 && this.scene.boardArray[randomX][randomY-1].bIsTaken == false) || 
-         (randomY+1 <= 6 && this.scene.boardArray[randomX][randomY+1].bIsTaken == false)))
+        (this.scene.CheckIfAnyFreeTilesAround(randomX, randomY)))
          {
             this.tile = this.scene.boardArray[randomX][randomY];
             this.scene.boardArray[randomX][randomY].bIsTaken = true;
@@ -32,23 +29,23 @@ export default class AI
                 this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'WhitePiece', this.scene.player1);
                 
                 
-                this.aiMakeSecondMove(this.scene.AI1, randomX, randomY);  
+                this.aiMakeSecondRandomMove(this.scene.AI1, randomX, randomY);  
             }
             else if(this.scene.getNumberOfAI() == 2)
             {
                 this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'WhitePiece', this.scene.AI1);
-                this.aiMakeSecondMove(this.scene.AI2, randomX, randomY);  
+                this.aiMakeSecondRandomMove(this.scene.AI2, randomX, randomY);  
             }
             
             
          }
         else if(this.scene.CheckHowManyMovesPossible() > 0)
         {
-            this.aiMakeFirstMove(AI);
+            this.aiMakeFirstRandomMove(AI);
         }
     }
 
-    aiMakeSecondMove(Owner, x, y)
+    aiMakeSecondRandomMove(Owner, x, y)
     {
         let bIsPlaced = false;
         do

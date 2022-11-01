@@ -1,5 +1,4 @@
 import Tile from "../js/Tile.js";
-import PawnBase from "./PawnBase.js";
 import Player from "../js/Player.js";
 import AI from "../js/AI.js"
 
@@ -121,7 +120,6 @@ export default class BoardScene extends Phaser.Scene
 
         }
 
-        //doesnt work for now
         AIvAIGame(FirstAI, SecondAI)
         {
             if(this.CheckHowManyMovesPossible() == 0)
@@ -132,7 +130,7 @@ export default class BoardScene extends Phaser.Scene
 
             for(let i = 0; i < this.CheckHowManyMovesPossible(); i++)
             {
-                FirstAI.aiMakeFirstMove(FirstAI)
+                FirstAI.aiMakeFirstRandomMove(FirstAI)
             }
             this.AIvAIGame(SecondAI, FirstAI);
         }
@@ -182,7 +180,7 @@ export default class BoardScene extends Phaser.Scene
 			
             if(this.numberofAI == 2) 
             {
-                this.GoThroughBoardCoutingScore();
+                this.GoThroughBoardCountingScore();
                 console.log("A1 Score " + this.AI1.score);
 			    console.log("A2 Score " + this.AI2.score);
                 GameOverText = this.add.text(897,350,"Wynik Białego: " + this.AI1.score + "\nWynik Czarnego: " + this.AI2.score, Style);
@@ -190,7 +188,7 @@ export default class BoardScene extends Phaser.Scene
 
             if(this.numberofAI == 1)
             {
-                this.GoThroughBoardCoutingScore();
+                this.GoThroughBoardCountingScore();
                 console.log("A1 Score " + this.player1.score);
 			    console.log("A2 Score " + this.AI1.score);
                 GameOverText = this.add.text(897,350,"Wynik Białego: " + this.player1.score + "\nWynik Czarnego: " + this.AI1.score, Style);
@@ -198,7 +196,7 @@ export default class BoardScene extends Phaser.Scene
 
             if(this.numberofAI == 0)
             {
-                this.GoThroughBoardCoutingScore();
+                this.GoThroughBoardCountingScore();
                 console.log("A1 Score " + this.player1.score);
 			    console.log("A2 Score " + this.player2.score);
                 GameOverText = this.add.text(897,350,"Wynik Białego: " + this.player1.score + "\nWynik Czarnego: " + this.player2.score, Style);
@@ -206,7 +204,7 @@ export default class BoardScene extends Phaser.Scene
 			
         }
 		
-		GoThroughBoardCoutingScore()
+		GoThroughBoardCountingScore()
 		{
 			var TempboardArray = Array.from(Array(7), () => new Array(7));
 			for(let y = 0; y < 6; y++)
@@ -221,6 +219,14 @@ export default class BoardScene extends Phaser.Scene
 			}
 		}
 
+        CheckIfAnyFreeTilesAround(TileX, TileY)
+        {
+            return ((TileX+1 <= 6 && this.boardArray[TileX+1][TileY].bIsTaken == false) || 
+                    (TileX-1 >= 0 && this.boardArray[TileX-1][TileY].bIsTaken == false) || 
+                    (TileY-1 >= 0 && this.boardArray[TileX][TileY-1].bIsTaken == false) || 
+                    (TileY+1 <= 6 && this.boardArray[TileX][TileY+1].bIsTaken == false))
+        }
+
         CheckHowManyMovesPossible()
         {
         let numberOfMovesLeft = 0;
@@ -230,10 +236,7 @@ export default class BoardScene extends Phaser.Scene
                 {
                     if(this.boardArray[j][i].bIsTaken == false)
                     {
-                        if((j+1 <= 6 && this.boardArray[j+1][i].bIsTaken == false) || 
-                           (j-1 >= 0 && this.boardArray[j-1][i].bIsTaken == false) || 
-                           (i-1 >= 0 && this.boardArray[j][i-1].bIsTaken == false) || 
-                           (i+1 <= 6 && this.boardArray[j][i+1].bIsTaken == false)) 
+                        if(this.CheckIfAnyFreeTilesAround(j,i)) 
                        {
                          numberOfMovesLeft++;
                        } 

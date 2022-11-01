@@ -35,10 +35,7 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
                 WhiteNotification.setVisible(true);
                 if(this.scene.player1.bIsFirstTilePlaced == false) 
                 {
-                    if((this.indexX+1 <= 6 && this.scene.boardArray[this.indexX+1][this.indexY].bIsTaken == false) || 
-                       (this.indexX-1 >= 0 && this.scene.boardArray[this.indexX-1][this.indexY].bIsTaken == false) || 
-                       (this.indexY-1 >= 0 && this.scene.boardArray[this.indexX][this.indexY-1].bIsTaken == false) || 
-                       (this.indexY+1 <= 6 && this.scene.boardArray[this.indexX][this.indexY+1].bIsTaken == false))
+                    if(this.scene.CheckIfAnyFreeTilesAround(this.indexX,this.indexY))
                     {
                     this.PawnBase = new PawnBase(this.scene, this.XOffset, this.YOffset, 'WhitePiece', this.scene.player1);
                     this.scene.numberOfPawns++;
@@ -85,10 +82,7 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
                 BlackNotification.setVisible(true);
                 if(this.scene.player1.bIsFirstTilePlaced == false) 
                 {
-                    if((this.indexX+1 <= 6 && this.scene.boardArray[this.indexX+1][this.indexY].bIsTaken == false) || 
-                       (this.indexX-1 >= 0 && this.scene.boardArray[this.indexX-1][this.indexY].bIsTaken == false) || 
-                       (this.indexY-1 >= 0 && this.scene.boardArray[this.indexX][this.indexY-1].bIsTaken == false) || 
-                       (this.indexY+1 <= 6 && this.scene.boardArray[this.indexX][this.indexY+1].bIsTaken == false))
+                    if(this.scene.CheckIfAnyFreeTilesAround(this.indexX,this.indexY))
                     {
                     this.PawnBase = new PawnBase(this.scene, this.XOffset, this.YOffset, 'WhitePiece', this.scene.player1);
                     this.scene.numberOfPawns++;
@@ -134,10 +128,7 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
 			{
                 if(this.scene.player1.bIsFirstTilePlaced == false) 
                 {
-                    if((this.indexX+1 <= 6 && this.scene.boardArray[this.indexX+1][this.indexY].bIsTaken == false) || 
-                       (this.indexX-1 >= 0 && this.scene.boardArray[this.indexX-1][this.indexY].bIsTaken == false) || 
-                       (this.indexY-1 >= 0 && this.scene.boardArray[this.indexX][this.indexY-1].bIsTaken == false) || 
-                       (this.indexY+1 <= 6 && this.scene.boardArray[this.indexX][this.indexY+1].bIsTaken == false))
+                    if(this.scene.CheckIfAnyFreeTilesAround(this.indexX,this.indexY))
                     {
                     this.PawnBase = new PawnBase(this.scene, this.XOffset, this.YOffset, 'WhitePiece', this.scene.player1);
                     
@@ -169,7 +160,7 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
                     {
                         this.scene.player1.bIsFirstTilePlaced = false;
 
-                        this.scene.AI1.aiMakeFirstMove(this.scene.AI1);
+                        this.scene.AI1.aiMakeFirstRandomMove(this.scene.AI1);
 
                         if(this.scene.CheckHowManyMovesPossible() == 0)
 					    {
