@@ -176,32 +176,25 @@ export default class BoardScene extends Phaser.Scene
        
         gameOver()
         {
-            console.log("Game over");
-			
             if(this.numberofAI == 2) 
             {
                 this.GoThroughBoardCountingScore();
-                console.log("A1 Score " + this.AI1.score);
-			    console.log("A2 Score " + this.AI2.score);
                 GameOverText = this.add.text(897,350,"Wynik Białego: " + this.AI1.score + "\nWynik Czarnego: " + this.AI2.score, Style);
+                console.log("The winner is: " + this.checkWhoTheWinnerIs());
             }
 
             if(this.numberofAI == 1)
             {
                 this.GoThroughBoardCountingScore();
-                console.log("A1 Score " + this.player1.score);
-			    console.log("A2 Score " + this.AI1.score);
                 GameOverText = this.add.text(897,350,"Wynik Białego: " + this.player1.score + "\nWynik Czarnego: " + this.AI1.score, Style);
+                console.log("The winner is: " + this.checkWhoTheWinnerIs());
             }
 
             if(this.numberofAI == 0)
             {
                 this.GoThroughBoardCountingScore();
-                console.log("A1 Score " + this.player1.score);
-			    console.log("A2 Score " + this.player2.score);
                 GameOverText = this.add.text(897,350,"Wynik Białego: " + this.player1.score + "\nWynik Czarnego: " + this.player2.score, Style);
             }
-			
         }
 		
 		GoThroughBoardCountingScore()
@@ -251,6 +244,48 @@ export default class BoardScene extends Phaser.Scene
             return this.numberofAI;
         }
         
+        checkWhoTheWinnerIs()
+        {
+            if(this.CheckHowManyMovesPossible() == 0)
+            {
+                if(this.getNumberOfAI() == 1)
+                {
+                    this.GoThroughBoardCountingScore();
+                    if(this.player1.score == this.AI1.score)
+                    {
+                        return 'Tie';
+                    } 
+                    else if(this.player1.score > this.AI1.score)
+                    {
+                        return this.player1.name;
+                    }
+                    else if(this.player1.score < this.AI1.score)
+                    {
+                        return this.AI1.name;
+                    }  
+                }
+                else if(this.getNumberOfAI() == 2)
+                {
+                    this.GoThroughBoardCountingScore();
+                    if(this.AI1.score == this.AI2.score)
+                    {
+                        return 'Tie';
+                    } 
+                    else if(this.AI1.score > this.AI2.score)
+                    {
+                        return this.AI1.name;
+                    }
+                    else if(this.AI1.score < this.AI2.score)
+                    {
+                        return this.AI2.name;
+                    }    
+                }
+            }
+            else 
+            {
+                return null;
+            }
+        }
     }
 
 

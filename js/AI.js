@@ -1,5 +1,12 @@
 import PawnBase from "../js/PawnBase.js"
 
+let scores =
+    {
+       Tie: 0,
+       Human: -1,
+       AI1: 1
+    }
+
 export default class AI 
 {
     constructor(scene, name)
@@ -114,33 +121,48 @@ export default class AI
         {
             for(let j = 0; j < 7; j++)
             {
-                if(this.boardArray[j][i].bIsTaken == false && this.CheckIfAnyFreeTilesAround(j,i))
+                if(this.scene.boardArray[j][i].bIsTaken == false && this.scene.CheckIfAnyFreeTilesAround(j,i))
                 {
+                    if(this.scene.getNumberOfAI() == 1)
+                    {
                     //tutaj stawiamy pionka zeby sprawdzic scora
                     this.tile = this.scene.boardArray[j][i];
+                    this.scene.boardArray[j][i].bIsTaken = true;
+                    this.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'WhitePiece', this.scene.player1);
                     
                     //tutaj sprawdzamy wynik na tym polu
-                    let score = this.minimax(board, 0, false);
+                    let score = this.minimax(this.scene.boardArray, 0, false, this.scene.player1);
+                    console.log("Score in make first move: " + score);
 
                     //w tym momencie musimy cofac ten ruch
-                    this.tile = this.scene.boardArray[j][i];
-
-                    //tutaj przypisujemy ten wynik do najlepszego wyniku jesli jest wiekrzy
+                    this.PawnBase.destroy();
+                    this.scene.boardArray[j][i].bIsTaken = false;
+                    
+                    //tutaj przypisujemy ten wynik do najlepszego wyniku jesli jest wiekszy
                     if(score > optimalScore)
                     {
                         optimalScore = score;
-                        optimalMove = { i, j};
+                        optimalMove = {i, j};
+                        console.log(optimalMove);
                     }
+                    }
+                    else if(this.scene.getNumberOfAI() == 2)
+                    {
+                        //implement this for AIvAI game
+                    }       
                 }   
             }
         }
-        this.scene.boardArray[optimalMove.i][optimalMove.j];
+        
+        this.tile = this.scene.boardArray[optimalMove.i][optimalMove.j];
         this.scene.boardArray[optimalMove.i][optimalMove.j].bIsTaken = true;
-
-        this.aiMakeSecondOptimalMove(optimalMove.i, optimalMove.y);
+        this.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'WhitePiece', this.scene.player1);
+        
+        //this.aiMakeSecondOptimalMove(optimalMove.i, optimalMove.j, this.scene.AI1);
+        
     }
 
-    aiMakeSecondOptimalMove(x, y)
+    aiMakeSecondOptimalMove(x, y, owner)
     {
         let optimalScore = -Infinity;
         let optimalMove;
@@ -149,12 +171,15 @@ export default class AI
         {
             //Do the move
             this.tile = this.scene.boardArray[x][y+1];
+            this.scene.boardArray[x][y+1].bIsTaken = true;
+            this.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'BlackPiece', owner);
             
             //Check the score
             let score = this.minimax(board, 0, false);
 
             //Undo the move
-            this.tile = this.scene.boardArray[x][y+1];
+            this.PawnBase.destroy();
+            this.scene.boardArray[x][y+1].bIsTaken = false;
             
             //Bind the score
             if(score > optimalScore)
@@ -168,12 +193,15 @@ export default class AI
         {
             //Do the move
             this.tile = this.scene.boardArray[x][y-1];
+            this.scene.boardArray[x][y-1].bIsTaken = true;
+            this.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'BlackPiece', this.scene.AI1);
             
             //Check the score
             let score = this.minimax(board, 0, false);
-            
+
             //Undo the move
-            this.tile = this.scene.boardArray[x][y+1];
+            this.PawnBase.destroy();
+            this.scene.boardArray[x][y-1].bIsTaken = false;
             
             //Bind the score
             if(score > optimalScore)
@@ -187,12 +215,15 @@ export default class AI
         {
             //Do the move
             this.tile = this.scene.boardArray[x+1][y];
+            this.scene.boardArray[x+1][y].bIsTaken = true;
+            this.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'BlackPiece', this.scene.AI1);
             
             //Check the score
             let score = this.minimax(board, 0, false);
-            
+
             //Undo the move
-            this.tile = this.scene.boardArray[x+1][y];
+            this.PawnBase.destroy();
+            this.scene.boardArray[x+1][y].bIsTaken = false;
             
             //Bind the score
             if(score > optimalScore)
@@ -206,13 +237,15 @@ export default class AI
         {
             //Do the move
             this.tile = this.scene.boardArray[x-1][y];
+            this.scene.boardArray[x-1][y].bIsTaken = true;
+            this.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'BlackPiece', this.scene.AI1);
             
             //Check the score
             let score = this.minimax(board, 0, false);
-            
+
             //Undo the move
-            this.tile = this.scene.boardArray[x-1][y];
-            
+            this.PawnBase.destroy();
+            this.scene.boardArray[x-1][y].bIsTaken = false;
             //Bind the score
             if(score > optimalScore)
             {
@@ -221,12 +254,98 @@ export default class AI
             }
         }  
 
-        this.scene.boardArray[optimalMove.i][optimalMove.j];
+        this.tile = this.scene.boardArray[optimalMove.i][optimalMove.j];
         this.scene.boardArray[optimalMove.i][optimalMove.j].bIsTaken = true;
+        this.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'BlackPiece', this.scene.AI1);
     }
 
-    minimax(board, depth, isMaximazing)
+    minimax(board, depth, isMaximazing, owner)
     {
-        return 1;
+        let result = this.scene.checkWhoTheWinnerIs();
+        console.log(result)
+        console.log("Winner: " + this.scene.checkWhoTheWinnerIs());
+        if(result !== null)
+        {
+            let score = scores[result];
+            console.log("Score: " + score);
+            return score;
+        }
+
+        if(isMaximazing)
+        {
+            let optimalScore = -Infinity;
+            for(let i = 0; i < 7; i++)
+            {
+                for(let j = 0; j < 7; j++)
+                {
+                    if(this.boardArray[j][i].bIsTaken == false && this.scene.CheckIfAnyFreeTilesAround(j,i))
+                    {
+                        if(this.scene.getNumberOfAI() == 1)
+                        {
+                        console.log("Maximazing");
+                        //tutaj stawiamy pionka zeby sprawdzic scora
+                        this.tile = this.scene.boardArray[j][i];
+                        this.scene.boardArray[j][i].bIsTaken = true;
+                        this.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'WhitePiece', owner);
+                        
+                        //tutaj sprawdzamy wynik na tym polu
+                        let score = this.minimax(board, depth + 1, false, this.scene.player1);
+    
+                        //w tym momencie musimy cofac ten ruch
+                        this.PawnBase.destroy();
+                        this.scene.boardArray[j][i].bIsTaken = false;
+
+                        if(score > optimalScore)
+                        {
+                            optimalScore = score;
+                        }
+                        }
+                        else if(this.scene.getNumberOfAI() == 2)
+                        {
+                            //implement this for AIvAI game
+                        }    
+                    }   
+                }
+            } 
+            return optimalScore;    
+        }
+        else
+        {
+            let optimalScore = Infinity;
+            for(let i = 0; i < 7; i++)
+            {
+                for(let j = 0; j < 7; j++)
+                {
+                    if(this.scene.boardArray[j][i].bIsTaken == false && this.scene.CheckIfAnyFreeTilesAround(j,i))
+                    {
+                        if(this.scene.getNumberOfAI() == 1)
+                        {
+                        console.log("Minimazing");
+                        //tutaj stawiamy pionka zeby sprawdzic scora
+                        this.tile = this.scene.boardArray[j][i];
+                        this.scene.boardArray[j][i].bIsTaken = true;
+                        this.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'WhitePiece', owner);
+                        
+                        //tutaj sprawdzamy wynik na tym polu
+                        let score = this.minimax(board, depth + 1, false, this.scene.player1);
+    
+                        //w tym momencie musimy cofac ten ruch
+                        this.PawnBase.destroy();
+                        this.scene.boardArray[j][i].bIsTaken = false;
+
+                        if(score < optimalScore)
+                        {
+                            optimalScore = score;
+                        }
+                        }
+                        else if(this.scene.getNumberOfAI() == 2)
+                        {
+                            //implement this for AIvAI game
+                        }    
+                    }   
+                }
+            } 
+            return optimalScore;
+        }
     }
 }
