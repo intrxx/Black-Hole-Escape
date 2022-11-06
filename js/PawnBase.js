@@ -35,7 +35,7 @@ export default class PawnBase extends Phaser.Physics.Arcade.Sprite {
 	//CheckScoreSetup(tile,TempScore)
 	CheckScoreSetup(tile,TempScore,TempboardArray)
 	{
-	
+		this.TempScore = 1;
 		//var TempboardArray = Array.from(Array(7), () => new Array(7));
 		//console.log("Y" + tile.indexX +   " X" + tile.indexY);
 		TempboardArray[tile.indexX][tile.indexY] = 1;

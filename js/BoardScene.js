@@ -252,14 +252,20 @@ export default class BoardScene extends Phaser.Scene
                     this.GoThroughBoardCountingScore();
                     if(this.player1.score == this.AI1.score)
                     {
+                        this.player1.score = 0;
+                        this.AI1.score = 0;
                         return 'Tie';
                     } 
                     else if(this.player1.score > this.AI1.score)
                     {
+                        this.player1.score = 0;
+                        this.AI1.score = 0;
                         return this.player1.name;
                     }
                     else if(this.player1.score < this.AI1.score)
                     {
+                        this.player1.score = 0;
+                        this.AI1.score = 0;
                         return this.AI1.name;
                     }  
                 }
