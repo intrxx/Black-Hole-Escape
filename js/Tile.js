@@ -40,7 +40,7 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
                     this.PawnBase = new PawnBase(this.scene, this.XOffset, this.YOffset, 'WhitePiece', this.scene.player1);
                     this.scene.numberOfPawns++;
                     this.scene.player1.bIsFirstTilePlaced = true;
-
+                    
                     OldXindex = this.indexX;
                     OldYindex = this.indexY;
 
@@ -55,6 +55,7 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
                     
                     this.PawnBase = new PawnBase(this.scene, this.XOffset, this.YOffset, 'BlackPiece', this.scene.player2);
                     this.scene.numberOfPawns++;
+                    
 
                     this.scene.player1.numberOfMoves--; 
 
@@ -62,6 +63,7 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
                     
                     if(this.scene.CheckHowManyMovesPossible() == 0)
 					{
+                        
 						this.scene.gameOver();
                         return;
 					}
@@ -70,6 +72,7 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
                 
                 if(this.scene.player1.numberOfMoves == 0) 
                 {
+                    console.log("Score after player 1: " + this.scene.CheckWhoHasMoreScore());
                     this.scene.player2.numberOfMoves = 2;
                     this.scene.player1.bIsFirstTilePlaced = false;
                     
@@ -101,6 +104,8 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
                 {
                     this.PawnBase = new PawnBase(this.scene, this.XOffset, this.YOffset, 'BlackPiece', this.scene.player2);
                     this.scene.numberOfPawns++;
+
+                    
                     
                     this.scene.player2.numberOfMoves--;
 
@@ -108,6 +113,7 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
                     
                     if(this.scene.CheckHowManyMovesPossible() == 0)
 					{
+                        
 						this.scene.gameOver();
                         return;
 					}
@@ -115,11 +121,13 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
                
                 if(this.scene.player2.numberOfMoves == 0) 
                 {
+                    console.log("Score after player 2: " + this.scene.CheckWhoHasMoreScore());
                     this.scene.player1.numberOfMoves = 2;
                     this.scene.player1.bIsFirstTilePlaced = false;
                     
                 }
             }
+            
         } 
         else if(this.scene.numberofAI == 1)
         {
@@ -179,6 +187,7 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
 
                 }
             } 
+            
         }
 
     });

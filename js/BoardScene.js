@@ -180,14 +180,14 @@ export default class BoardScene extends Phaser.Scene
             {
                 this.GoThroughBoardCountingScore();
                 GameOverText = this.add.text(897,350,"Wynik Białego: " + this.AI1.score + "\nWynik Czarnego: " + this.AI2.score, Style);
-                console.log("The winner is: " + this.checkWhoTheWinnerIs());
+                console.log("The winner is: " + this.CheckWhoHasMoreScore());
             }
 
             if(this.numberofAI == 1)
             {
                 this.GoThroughBoardCountingScore();
                 GameOverText = this.add.text(897,350,"Wynik Białego: " + this.player1.score + "\nWynik Czarnego: " + this.AI1.score, Style);
-                console.log("The winner is: " + this.checkWhoTheWinnerIs());
+                console.log("The winner is: " + this.CheckWhoHasMoreScore());
             }
 
             if(this.numberofAI == 0)
@@ -244,10 +244,9 @@ export default class BoardScene extends Phaser.Scene
             return this.numberofAI;
         }
         
-        checkWhoTheWinnerIs()
+        CheckWhoHasMoreScore()
         {
-            if(this.CheckHowManyMovesPossible() == 0)
-            {
+
                 if(this.getNumberOfAI() == 1)
                 {
                     this.GoThroughBoardCountingScore();
@@ -280,11 +279,22 @@ export default class BoardScene extends Phaser.Scene
                         return this.AI2.name;
                     }    
                 }
-            }
-            else 
-            {
-                return null;
-            }
+                else if(this.getNumberOfAI() == 0)
+                {
+                    this.GoThroughBoardCountingScore();
+                    if(this.player1.score == this.player2.score)
+                    {
+                        return 'Tie';
+                    } 
+                    else if(this.player1.score > this.player2.score)
+                    {
+                        return this.player1.name;
+                    }
+                    else if(this.player1.score < this.player2.score)
+                    {
+                        return this.player2.name;
+                    }    
+                }
         }
     }
 

@@ -8,8 +8,19 @@ export default class PawnBase extends Phaser.Physics.Arcade.Sprite {
 
 		this.TempScore = 1;
 		
-		this.sprite = scene.add.image(x, y, sprite).setScale(0.9);
+		//this.sprite = scene.add.image(x, y, sprite).setScale(0.9);
 		
+		switch(sprite)
+        {
+            case 'WhitePiece':
+                this.sprite = scene.add.image(x, y, 'WhitePiece').setScale(0.9);
+            	break;
+            case 'BlackPiece':
+                this.sprite = scene.add.image(x, y, 'BlackPiece').setScale(0.9);
+           		break;
+            default:
+				break;
+        }
 	}
 	
 	/* Problem jest taki że jeśli idziemy kolejno po tailach sprawdzając punktacje  sprawdzimy kilka razy ten sam kształt. 
