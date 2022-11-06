@@ -139,7 +139,7 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
                     if(this.scene.CheckIfAnyFreeTilesAround(this.indexX,this.indexY))
                     {
                     this.PawnBase = new PawnBase(this.scene, this.XOffset, this.YOffset, 'WhitePiece', this.scene.player1);
-                    
+                    console.log(this.indexX + " " + this.indexY);
 
                     this.scene.numberOfPawns++;
                     this.scene.player1.bIsFirstTilePlaced = true;

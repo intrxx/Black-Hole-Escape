@@ -200,9 +200,9 @@ export default class BoardScene extends Phaser.Scene
 		GoThroughBoardCountingScore()
 		{
 			var TempboardArray = Array.from(Array(7), () => new Array(7));
-			for(let y = 0; y < 6; y++)
+			for(let y = 0; y <= 6; y++)
 			{
-				for(let x = 0; x < 6; x++)
+				for(let x = 0; x <= 6; x++)
 				{
 					if(this.boardArray[x][y].PawnBase != undefined && TempboardArray[x][y] != 1)
 					{
@@ -211,7 +211,7 @@ export default class BoardScene extends Phaser.Scene
 				}	
 			}
 		}
-
+        
         CheckIfAnyFreeTilesAround(TileX, TileY)
         {
             return ((TileX+1 <= 6 && this.boardArray[TileX+1][TileY].bIsTaken == false) || 
@@ -246,61 +246,33 @@ export default class BoardScene extends Phaser.Scene
         
         CheckWhoHasMoreScore()
         {
-
                 if(this.getNumberOfAI() == 1)
-                {
+                {   
+                    let oldScoreP = this.player1.score; //1
+                    let oldScoreAI = this.AI1.score; //1
+
                     this.GoThroughBoardCountingScore();
-                    if(this.player1.score == this.AI1.score)
-                    {
-                        this.player1.score = 0;
-                        this.AI1.score = 0;
-                        return 'Tie';
-                    } 
-                    else if(this.player1.score > this.AI1.score)
-                    {
-                        this.player1.score = 0;
-                        this.AI1.score = 0;
-                        return this.player1.name;
-                    }
-                    else if(this.player1.score < this.AI1.score)
-                    {
-                        this.player1.score = 0;
-                        this.AI1.score = 0;
-                        return this.AI1.name;
-                    }  
+
+                    let finalScore = this.AI1.score - oldScoreAI - (this.player1.score - oldScoreP);
+
+                    this.player1.score = oldScoreP;
+                    this.AI1.score = oldScoreAI;
+
+                    console.log("Player: " + this.player1.score);
+                    console.log("AI: " + this.AI1.score);
+
+                    console.log("Final Score: " + finalScore)
+                    return finalScore;
                 }
-                else if(this.getNumberOfAI() == 2)
+                else 
                 {
-                    this.GoThroughBoardCountingScore();
-                    if(this.AI1.score == this.AI2.score)
-                    {
-                        return 'Tie';
-                    } 
-                    else if(this.AI1.score > this.AI2.score)
-                    {
-                        return this.AI1.name;
-                    }
-                    else if(this.AI1.score < this.AI2.score)
-                    {
-                        return this.AI2.name;
-                    }    
+                    return;
                 }
-                else if(this.getNumberOfAI() == 0)
-                {
-                    this.GoThroughBoardCountingScore();
-                    if(this.player1.score == this.player2.score)
-                    {
-                        return 'Tie';
-                    } 
-                    else if(this.player1.score > this.player2.score)
-                    {
-                        return this.player1.name;
-                    }
-                    else if(this.player1.score < this.player2.score)
-                    {
-                        return this.player2.name;
-                    }    
-                }
+        }
+
+        saveCurrentScore()
+        {
+            this.GoThroughBoardCountingScore();
         }
     }
 
