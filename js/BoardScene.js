@@ -274,6 +274,21 @@ export default class BoardScene extends Phaser.Scene
         {
             this.GoThroughBoardCountingScore();
         }
+
+        clearBoard()
+        {
+            for(let i = 0; i < 7; i++)
+            {
+                for(let j = 0; j < 7; j++)
+                {
+                    if(this.boardArray[j][i].bIsTaken == true && this.boardArray[j][i].tile.PawnBase.sprite == null)
+                    {
+                        this.boardArray[j][i].tile.PawnBase = null;
+                        this.boardArrayp[j][i].bIsTaken = false;                   
+                     }   
+                }
+            }
+        }
     }
 
 
