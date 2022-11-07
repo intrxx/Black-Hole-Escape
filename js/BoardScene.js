@@ -39,6 +39,9 @@ export default class BoardScene extends Phaser.Scene
         this.add.image(470, 422, 'Board').setScale(0.9);
     
         this.bGameHasStarted = false;
+        this.AIType;
+        let Random = true;
+        let Minimax = true;
 
         this.PvP = this.add.image(1050, 590, 'PvP').setInteractive().setScale(0.6);
         this.PvP.on('pointerdown', () => {
@@ -62,11 +65,20 @@ export default class BoardScene extends Phaser.Scene
         this.AIvAI = this.add.image(1050, 790, 'AIvAI').setInteractive().setScale(0.6);
         this.AIvAI.on('pointerdown', () => {
             this.bGameHasStarted = true;
-
             this.numberofAI = 2;
+            this.AIType = {Random};
             this.startGame(2);
             this.destroyButtons();
         });
+
+        this.MINIMAXAIvAI = this.add.image(200, 900, 'AIvAI').setInteractive().setScale(0.4);
+        this.MINIMAXAIvAI.on('pointerdown', () => {
+            this.bGameHasStarted = true;
+            this.numberofAI = 2;
+            this.AIType = {Minimax};
+            this.startGame(2);
+            this.destroyButtons();
+        })
 
         this.ResetButton = this.add.image(1030, 45, 'Restart').setInteractive().setScale(0.4);
         this.ResetButton.on('pointerdown', () => {
@@ -74,6 +86,8 @@ export default class BoardScene extends Phaser.Scene
 
             this.scene.restart();
         });
+
+        
             
         this.numberOfGame = 0;
 
@@ -135,6 +149,29 @@ export default class BoardScene extends Phaser.Scene
             this.AIvAIGame(SecondAI, FirstAI);
         }
 
+        MINIMAXAIvAIGame(FirstAI, SecondAI, bISMINIMAXAITurn)
+        {
+            if(this.CheckHowManyMovesPossible() == 0)
+            {
+                this.gameOver();
+                return;
+            }
+
+            if(bISMINIMAXAITurn)
+            {
+                FirstAI.aiMakeFirstOptimalMove();
+                bISMINIMAXAITurn = false;
+                console.log("Optimal")
+            }
+            else
+            {
+                SecondAI.aiMakeFirstRandomMove(FirstAI)
+                bISMINIMAXAITurn = true;
+            }     
+            
+            this.MINIMAXAIvAIGame(FirstAI, SecondAI, bISMINIMAXAITurn);
+        }
+
         startGame(numberOfAI)
         {
             this.numberOfGames++;
@@ -158,12 +195,19 @@ export default class BoardScene extends Phaser.Scene
 
             if(numberOfAI == 2)
             {
-                this.AI1 = new AI(this, 'AI1');
-                this.AI2 = new AI(this, 'AI2');
-
-                this.AIvAIGame(this.AI1, this.AI2);
+                if(this.AIType.Random)
+                {
+                    this.AI1 = new AI(this, 'AI1');
+                    this.AI2 = new AI(this, 'AI2');
+                    this.AIvAIGame(this.AI1, this.AI2);
+                }
+                else if(this.AIType.Minimax)
+                {
+                    this.AI1 = new AI(this, 'AI1');
+                    this.player1 = new AI(this, 'player1');
+                    this.MINIMAXAIvAIGame(this.AI1, this.player1, false)
+                }
             }
-
         }
 
         destroyButtons()
@@ -171,9 +215,9 @@ export default class BoardScene extends Phaser.Scene
             this.PvP.destroy();
             this.AIvAI.destroy();
             this.PvAI.destroy();
+            this.MINIMAXAIvAI.destroy();
         }
 
-       
         gameOver()
         {
             if(this.numberofAI == 2) 
@@ -258,10 +302,10 @@ export default class BoardScene extends Phaser.Scene
                     this.player1.score = oldScoreP;
                     this.AI1.score = oldScoreAI;
 
-                    console.log("Player: " + this.player1.score);
-                    console.log("AI: " + this.AI1.score);
+                    //console.log("Player: " + this.player1.score);
+                    //console.log("AI: " + this.AI1.score);
 
-                    console.log("Final Score: " + finalScore)
+                    //console.log("Final Score: " + finalScore)
                     return finalScore;
                 }
                 else 
@@ -281,9 +325,10 @@ export default class BoardScene extends Phaser.Scene
             {
                 for(let j = 0; j < 7; j++)
                 {
-                    if(this.boardArray[j][i].bIsTaken == true && this.boardArray[j][i].tile.PawnBase.sprite == null)
+                    if(typeof this.boardArray[j][i].PawnBase !== "undefined" && typeof this.boardArray[j][i].PawnBase.sprite !== "undefined")
                     {
-                        this.boardArray[j][i].tile.PawnBase = null;
+                        console.log("kordy: " + j + " " + i);
+                        this.boardArray[j][i].PawnBase = null;
                         this.boardArrayp[j][i].bIsTaken = false;                   
                      }   
                 }

@@ -1,5 +1,7 @@
 import PawnBase from "../js/PawnBase.js"
 
+let maxDepth = 10;
+
 export default class AI 
 {
     constructor(scene, name)
@@ -12,6 +14,9 @@ export default class AI
 
         this.score = 0;
     }
+
+    //----------------------------------------------------------------------------------------------------------------------------------------------
+    //START OF RANDOM AI
 
     aiMakeFirstRandomMove(AI)
     {   
@@ -27,17 +32,21 @@ export default class AI
             if(this.scene.getNumberOfAI() == 1)
             {
                 this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'WhitePiece', this.scene.player1);
-                
-                
                 this.aiMakeSecondRandomMove(this.scene.AI1, randomX, randomY);  
             }
             else if(this.scene.getNumberOfAI() == 2)
             {
-                this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'WhitePiece', this.scene.AI1);
-                this.aiMakeSecondRandomMove(this.scene.AI2, randomX, randomY);  
-            }
-            
-            
+                if(this.scene.AIType.Random)
+                {
+                    this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'WhitePiece', this.scene.AI1);
+                    this.aiMakeSecondRandomMove(this.scene.AI2, randomX, randomY);  
+                }
+                else if(this.scene.AIType.minimax)
+                {
+                    this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'WhitePiece', this.scene.AI2);
+                    this.aiMakeSecondRandomMove(this.scene.AI1, randomX, randomY);   
+                } 
+            }  
          }
         else if(this.scene.CheckHowManyMovesPossible() > 0)
         {
@@ -103,7 +112,11 @@ export default class AI
         } while(bIsPlaced != true)
         
     }
-   
+
+    //END OF RANDOM AI
+    //----------------------------------------------------------------------------------------------------------------------------------------------
+    //START OF MINIMAX AI
+
     aiMakeFirstOptimalMove() 
     {
         this.scene.saveCurrentScore();
@@ -118,15 +131,13 @@ export default class AI
             {
                 if(this.scene.boardArray[j][i].bIsTaken == false && this.scene.CheckIfAnyFreeTilesAround(j, i))
                 {
-                    if(this.scene.getNumberOfAI() == 1)
-                    {
                     //Stawiamy pierwszy pionek
                     this.tile = this.scene.boardArray[j][i];
                     this.scene.boardArray[j][i].bIsTaken = true;
                     this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, '1', this.scene.AI1);
                     
                     //Wchodzimy do funkcji ktora stawia drugi pionek i sprawdza score z takim ulozeniem
-                    optimalSecondMoveScore = this.aiMakeSecondOptimalMove(j, i, this.scene.player1, false);
+                    optimalSecondMoveScore = this.aiMakeSecondOptimalMove(j, i, this.scene.player1, true);
                     
                     //Czyscimy postawiony pionek
                     this.tile = this.scene.boardArray[j][i];
@@ -142,22 +153,26 @@ export default class AI
                         let SecondJ = optimalSecondMoveScore.tempJ;
                         let SecondI = optimalSecondMoveScore.tempI;
                         optimalSecondMove = {SecondJ, SecondI};
-                    }
-
-                    }    
+                    }     
                 }   
             }
         }
+        this.scene.clearBoard();
 
         //Stawiamy pionki na optymalnych miejscach
-        this.tile = this.scene.boardArray[optimalMove.j][optimalMove.i];
-        this.scene.boardArray[optimalMove.j][optimalMove.i].bIsTaken = true;
-        this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'BlackPiece', this.scene.AI1);
+        if(this.scene.CheckHowManyMovesPossible() > 0)
+        {
+            this.tile = this.scene.boardArray[optimalMove.j][optimalMove.i];
+            this.scene.boardArray[optimalMove.j][optimalMove.i].bIsTaken = true;
+            this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'BlackPiece', this.scene.AI1);
+    
+            this.tile = this.scene.boardArray[optimalSecondMove.SecondJ][optimalSecondMove.SecondI];
+            this.scene.boardArray[optimalSecondMove.SecondJ][optimalSecondMove.SecondI].bIsTaken = true;
+            this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'WhitePiece', this.scene.player1);
 
-        this.tile = this.scene.boardArray[optimalSecondMove.SecondJ][optimalSecondMove.SecondI];
-        this.scene.boardArray[optimalSecondMove.SecondJ][optimalSecondMove.SecondI].bIsTaken = true;
-        this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'WhitePiece', this.scene.player1);
-
+            
+        }
+        
         this.scene.saveCurrentScore();
     }
 
@@ -203,13 +218,13 @@ export default class AI
              this.scene.boardArray[YCord][XCord].bIsTaken = true;
              this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, '1', owner);
             
-             console.log("-------------------------------------------------");
-             console.log("x: " + YCord + " y: " + (XCord));
+             //console.log("-------------------------------------------------");
+             //console.log("x: " + YCord + " y: " + (XCord));
             
                 //Call minimax
               if(bCallMiniMax)
              {
-                
+                score = this.minimax(this.scene.boardArray, 0, false, this.scene.player1);
              }
              else
              {
@@ -233,12 +248,12 @@ export default class AI
         return optimalMove;       
     }
     
-    minimax(board, depth, isMaximazing, maxDepth, owner)
+    
+    minimax(board, depth, isMaximazing, owner)
     {
         if(isMaximazing)
         {
             let optimalScore = -Infinity;
-            let optimalMove;
             for(let i = 0; i < 7; i++)
             {
                 for(let j = 0; j < 7; j++)
@@ -247,17 +262,18 @@ export default class AI
                     {
                         if(this.scene.getNumberOfAI() == 1)
                         {
+                        //Stawiamy pierwszego pionka
                         let score;
                         this.tile = this.scene.boardArray[j][i];
                         this.scene.boardArray[j][i].bIsTaken = true;
                         this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, '1', owner);
 
-                        //Drugi pionek
-                        this.aiMakeSecondOptimalMove(j, i, this.scene.player1, false);
-
-                        if(depth < maxDepth)
+                        //Wchodzimy do funkcji ktora stawia drugiego i wywoluje rekurencyjnie minimaxa
+                        
+                        if(depth <= maxDepth)
                         {
-                            score = this.minimax(board, depth + 1, true, this.scene.AI1, maxDepth, this.scene.AI1);
+                            score = this.aiMakeSecondOptimalMove(j, i, this.scene.AI1, true);
+                            depth++;
                         }
                         else 
                         {
@@ -297,10 +313,11 @@ export default class AI
                             this.tile = this.scene.boardArray[j][i];
                             this.scene.boardArray[j][i].bIsTaken = true;
                             this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, '1', owner);
-    
-                            if(depth < maxDepth)
+                            
+                            if(depth <= this.maxDepth)
                             {
-                                score = this.minimax(board, depth + 1, false, this.scene.player1, maxDepth);
+                                score = this.aiMakeSecondOptimalMove(j, i, this.scene.player1, true);
+                                depth++;
                             }
                             else 
                             {
@@ -314,9 +331,10 @@ export default class AI
                             {
                                 optimalMove = {i, j};
                             }
-    
+
                             this.tile.PawnBase = null;
                             this.scene.boardArray[j][i].bIsTaken = false;
+    
                         }
                     }   
                 }
@@ -324,4 +342,7 @@ export default class AI
             return optimalScore;
         }
     }
+    //END OF MINIMAX AI
+    //----------------------------------------------------------------------------------------------------------------------------------------------
+
 }
