@@ -224,14 +224,12 @@ export default class BoardScene extends Phaser.Scene
             {
                 this.GoThroughBoardCountingScore();
                 GameOverText = this.add.text(897,350,"Wynik Białego: " + this.AI1.score + "\nWynik Czarnego: " + this.AI2.score, Style);
-                console.log("The winner is: " + this.CheckWhoHasMoreScore());
             }
 
             if(this.numberofAI == 1)
             {
                 this.GoThroughBoardCountingScore();
                 GameOverText = this.add.text(897,350,"Wynik Białego: " + this.player1.score + "\nWynik Czarnego: " + this.AI1.score, Style);
-                console.log("The winner is: " + this.CheckWhoHasMoreScore());
             }
 
             if(this.numberofAI == 0)

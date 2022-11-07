@@ -157,7 +157,7 @@ export default class AI
                 }   
             }
         }
-        this.scene.clearBoard();
+        //this.scene.clearBoard();
 
         //Stawiamy pionki na optymalnych miejscach
         if(this.scene.CheckHowManyMovesPossible() > 0)
@@ -232,6 +232,7 @@ export default class AI
              }
 
              //Undo the move
+             this.tile = this.scene.boardArray[YCord][XCord];
              this.tile.PawnBase = null;
              this.scene.boardArray[YCord][XCord].bIsTaken = false;
              
@@ -288,6 +289,7 @@ export default class AI
                             optimalMove = {i, j};
                         }
 
+                        this.tile = this.scene.boardArray[j][i];
                         this.tile.PawnBase = null;
                         this.scene.boardArray[j][i].bIsTaken = false;
 
@@ -332,6 +334,7 @@ export default class AI
                                 optimalMove = {i, j};
                             }
 
+                            this.tile = this.scene.boardArray[j][i];
                             this.tile.PawnBase = null;
                             this.scene.boardArray[j][i].bIsTaken = false;
     
