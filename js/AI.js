@@ -157,8 +157,6 @@ export default class AI
                 }   
             }
         }
-        //this.scene.clearBoard();
-
         //Stawiamy pionki na optymalnych miejscach
         if(this.scene.CheckHowManyMovesPossible() > 0)
         {

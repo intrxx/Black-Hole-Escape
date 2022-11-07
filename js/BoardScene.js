@@ -204,8 +204,8 @@ export default class BoardScene extends Phaser.Scene
                 else if(this.AIType.Minimax)
                 {
                     this.AI1 = new AI(this, 'AI1');
-                    this.player1 = new AI(this, 'player1');
-                    this.MINIMAXAIvAIGame(this.AI1, this.player1, false)
+                    this.AI2 = new AI(this, 'AI2');
+                    this.MINIMAXAIvAIGame(this.AI1, this.AI2, false);
                 }
             }
         }
@@ -317,21 +317,6 @@ export default class BoardScene extends Phaser.Scene
             this.GoThroughBoardCountingScore();
         }
 
-        clearBoard()
-        {
-            for(let i = 0; i < 7; i++)
-            {
-                for(let j = 0; j < 7; j++)
-                {
-                    if(typeof this.boardArray[j][i].PawnBase !== "undefined" && typeof this.boardArray[j][i].PawnBase.sprite !== "undefined")
-                    {
-                        console.log("kordy: " + j + " " + i);
-                        this.boardArray[j][i].PawnBase = null;
-                        this.boardArrayp[j][i].bIsTaken = false;                   
-                     }   
-                }
-            }
-        }
     }
 
 
