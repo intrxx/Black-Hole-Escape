@@ -9,6 +9,6 @@ To lunch the game download the code and open index.html with Live Server
 
 Implemented AI:
 
--Random AI
+-Random AI,
 -Minimax AI
 
