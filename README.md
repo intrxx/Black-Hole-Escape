@@ -7,5 +7,8 @@ All assets are made by DearOhDeer
 
 To lunch the game download the code and open index.html with Live Server
 
-Currently Minimax AI works only versus Player
+Implemented AI:
+
+-Random AI
+-Minimax AI
 
