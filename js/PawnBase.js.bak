@@ -23,21 +23,27 @@ export default class PawnBase extends Phaser.Physics.Arcade.Sprite {
         }
 	}
 	
-	
+	/* Problem jest taki że jeśli idziemy kolejno po tailach sprawdzając punktacje  sprawdzimy kilka razy ten sam kształt. 
+	Możliwym rozwiązaniem jesli nie chcemy wywoływać kilka razy tego samego jest opcją zwracania już sprawdzonych taili.
+	*/
 	//Funkcje zwiazane z zliaczaniem punktow START-----------------------------------------------------------------------------------------------------------------------
 	CheckOwner(tile)
 	{
-		tile.PawnBase.owner.shapeCount++;
 		return tile.PawnBase.owner;
 	}
 	
+	//CheckScoreSetup(tile,TempScore)
 	CheckScoreSetup(tile,TempScore,TempboardArray)
 	{
 		this.TempScore = 1;
 		//var TempboardArray = Array.from(Array(7), () => new Array(7));
+		//console.log("Y" + tile.indexX +   " X" + tile.indexY);
 		TempboardArray[tile.indexX][tile.indexY] = 1;
 		let PawnOnwer=this.CheckOwner(tile)
-		//console.log("Y" + tile.indexX +   " X" + tile.indexY + " Owner " + PawnOnwer.name);
+		if(
+		{
+			this.scene.IncrementShapeCount()
+		}
 		this.CheckScore(tile,this.TempScore,TempboardArray,PawnOnwer)
 	}
 	
@@ -60,7 +66,7 @@ export default class PawnBase extends Phaser.Physics.Arcade.Sprite {
 			{
 				TempboardArray[indexX - 1][indexY] = 1;
 				this.TempScore++;
-				//console.log("TempScore:"+ this.TempScore + " y:" + (indexX - 1) + " x:"+indexY + " Owner: " + owner.name);
+				//console.log("TempScore "+ this.TempScore + " y " + (indexX - 1) + "x "+indexY);
 				this.CheckScore(this.scene.boardArray[indexX - 1][indexY],this.TempScore,TempboardArray,owner);
 			}
 		}
@@ -75,7 +81,7 @@ export default class PawnBase extends Phaser.Physics.Arcade.Sprite {
 			{
 				TempboardArray[indexX + 1][indexY] = 1;
 				this.TempScore++;
-				//console.log("TempScore:"+ this.TempScore + " y:" + (indexX + 1) + " x:"+indexY + " Owner: " + owner.name);
+				//console.log("TempScore "+ this.TempScore + " y " + (indexX + 1) + "x "+indexY);
 				this.CheckScore(this.scene.boardArray[indexX + 1][indexY],this.TempScore,TempboardArray,owner);
 			}
 		}
@@ -90,7 +96,7 @@ export default class PawnBase extends Phaser.Physics.Arcade.Sprite {
 			{
 				TempboardArray[indexX][indexY+1] = 1;
 				this.TempScore++;
-				//console.log("TempScore:"+ this.TempScore + " y:" + indexX + " x:"+(indexY+ 1)+ " Owner: " + owner.name);
+				//console.log("TempScore "+ this.TempScore + " y " + indexX + "x "+(indexY+ 1));
 				this.CheckScore(this.scene.boardArray[indexX][indexY+ 1],this.TempScore,TempboardArray,owner);
 			}
 		}
@@ -105,7 +111,7 @@ export default class PawnBase extends Phaser.Physics.Arcade.Sprite {
 			{
 				TempboardArray[indexX][indexY-1] = 1;
 				this.TempScore++;
-				//console.log("TempScore:"+ this.TempScore + " y:" + indexX + " x:"+(indexY- 1) + " Owner: " + owner.name);
+				//console.log("TempScore "+ this.TempScore + " y " + indexX + "x "+(indexY- 1));
 				this.CheckScore(this.scene.boardArray[indexX][indexY- 1],this.TempScore,TempboardArray,owner);
 			}
 		}
@@ -118,7 +124,8 @@ export default class PawnBase extends Phaser.Physics.Arcade.Sprite {
 		{
 			owner.score = this.TempScore;
 		}
-
+		
+		
 		//console.log("TempScore Koncowy "+ this.TempScore);
 		//console.log("Punkty "+ owner.score);
 	}
