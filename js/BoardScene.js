@@ -3,6 +3,7 @@ import Player from "../js/Player.js";
 import AI from "../js/AI.js"
 
 let GameOverText;
+let ButtonDescription;
 let Style;
 
 export default class BoardScene extends Phaser.Scene 
@@ -39,59 +40,57 @@ export default class BoardScene extends Phaser.Scene
     {
         this.add.image(470, 422, 'Board').setScale(0.9);
     
-        this.bGameHasStarted = false;
         this.AIType;
         let Random = true;
         let Minimax = true;
+        let Negamax = true;
 
-        this.PvP = this.add.image(1050, 590, 'PvP').setInteractive().setScale(0.6);
+        this.PvP = this.add.image(1050, 690, 'PvP').setInteractive().setScale(0.6);
         this.PvP.on('pointerdown', () => {
-            this.bGameHasStarted = true;
-
             this.numberofAI = 0;
-            
             this.startGame(0);
             this.destroyButtons();
         });
 
-        this.PvAI = this.add.image(1050, 690, 'PvAI').setInteractive().setScale(0.6);
+        this.PvAI = this.add.image(1050, 790, 'PvAI').setInteractive().setScale(0.6);
         this.PvAI.on('pointerdown', () => {
-            this.bGameHasStarted = true;
-
             this.numberofAI = 1;
             this.startGame(1);
             this.destroyButtons();
         });
 
-        this.AIvAI = this.add.image(1050, 790, 'AIvAI').setInteractive().setScale(0.6);
+        this.RandomText = this.add.text(1020,160,"RANDOM");
+        this.AIvAI = this.add.image(1050, 200, 'AIvAI').setInteractive().setScale(0.4);
         this.AIvAI.on('pointerdown', () => {
-            this.bGameHasStarted = true;
             this.numberofAI = 2;
             this.AIType = {Random};
             this.startGame(2);
             this.destroyButtons();
         });
 
+        this.MinimaxText = this.add.text(1015,250,"MINIMAX");
         this.MINIMAXAIvAI = this.add.image(1050 ,290 , 'AIvAI').setInteractive().setScale(0.4);
         this.MINIMAXAIvAI.on('pointerdown', () => {
-            this.bGameHasStarted = true;
             this.numberofAI = 2;
             this.AIType = {Minimax};
             this.startGame(2);
             this.destroyButtons();
         })
 
-        this.ResetButton = this.add.image(1030, 45, 'Restart').setInteractive().setScale(0.4);
-        this.ResetButton.on('pointerdown', () => {
-            this.bGameHasStarted = false;
+        this.NegamaxText = this.add.text(1015,341,"NEGAMAX");
+        this.NEGAMAXAIvAI = this.add.image(1050 ,380 , 'AIvAI').setInteractive().setScale(0.4);
+        this.NEGAMAXAIvAI.on('pointerdown', () => {
+            this.numberofAI = 2;
+            this.AIType = {Negamax};
+            this.startGame(2);
+            this.destroyButtons();
+        })
 
+        this.ResetButton = this.add.image(1050, 38, 'Restart').setInteractive().setScale(0.4);
+        this.ResetButton.on('pointerdown', () => {
             this.scene.restart();
         });
-
-        
-            
-        this.numberOfGame = 0;
-
+   
         Style = {font: "30px Arial"}
     }
 
@@ -135,7 +134,7 @@ export default class BoardScene extends Phaser.Scene
 
         }
 
-        AIvAIGame(FirstAI, SecondAI)
+        AIvAIGame(FirstAI, SecondAI, AIType, bIsAlgorithTurn)
         {
             if(this.CheckHowManyMovesPossible() == 0)
             {
@@ -143,41 +142,51 @@ export default class BoardScene extends Phaser.Scene
                 return;
             }
 
-            for(let i = 0; i < this.CheckHowManyMovesPossible(); i++)
+            if(AIType === "Random")
             {
-                FirstAI.aiMakeFirstRandomMove(FirstAI)
-            }
-            this.AIvAIGame(SecondAI, FirstAI);
-        }
-
-        MINIMAXAIvAIGame(FirstAI, SecondAI, bISMINIMAXAITurn)
-        {
-            if(this.CheckHowManyMovesPossible() == 0)
-            {
-                this.gameOver();
-                return;
+                for(let i = 0; i < this.CheckHowManyMovesPossible(); i++)
+                {
+                    FirstAI.aiMakeFirstRandomMove(FirstAI)
+                }
+                this.AIvAIGame(SecondAI, FirstAI, "Random", bIsAlgorithTurn);
             }
 
-            if(bISMINIMAXAITurn)
+            if(AIType === "Minimax")
             {
-                FirstAI.aiMakeFirstOptimalMove();
-                bISMINIMAXAITurn = false;
-                //console.log("Optimal")
+                if(bIsAlgorithTurn)
+                {
+                    FirstAI.aiMakeFirstMinimaxOptimalMove();
+                    bIsAlgorithTurn = false;
+                }
+                else
+                {
+                    SecondAI.aiMakeFirstRandomMove(SecondAI)
+                    bIsAlgorithTurn = true;
+                }     
+                
+                this.AIvAIGame(FirstAI, SecondAI, "Minimax", bIsAlgorithTurn);    
             }
-            else
+
+            if(AIType === "Negamax")
             {
-                SecondAI.aiMakeFirstRandomMove(SecondAI)
-                bISMINIMAXAITurn = true;
-				//console.log("Random")
-            }     
+                if(bIsAlgorithTurn)
+                {
+                    FirstAI.aiMakeFirstNegamaxOptimalMove();
+                    bIsAlgorithTurn = false;
+                }
+                else
+                {
+                    SecondAI.aiMakeFirstRandomMove(SecondAI)
+                    bIsAlgorithTurn = true;
+                }     
+                
+                this.AIvAIGame(FirstAI, SecondAI, "Negamax", bIsAlgorithTurn);     
+            }
             
-            this.MINIMAXAIvAIGame(FirstAI, SecondAI, bISMINIMAXAITurn);
         }
 
         startGame(numberOfAI)
         {
-            this.numberOfGames++;
-               
             this.createBoard(7);
             this.score = 1;
             this.scoreOwner = null;
@@ -201,13 +210,19 @@ export default class BoardScene extends Phaser.Scene
                 {
                     this.AI1 = new AI(this, 'AI1','Random');
                     this.AI2 = new AI(this, 'AI2','Random');
-                    this.AIvAIGame(this.AI1, this.AI2);
+                    this.AIvAIGame(this.AI1, this.AI2, "Random", false);
                 }
                 else if(this.AIType.Minimax)
                 {
                     this.AI1 = new AI(this, 'AI1','Minmax');
                     this.AI2 = new AI(this, 'AI2','Random');
-                    this.MINIMAXAIvAIGame(this.AI1, this.AI2, false);
+                    this.AIvAIGame(this.AI1, this.AI2, "Minimax", false);
+                }
+                else if(this.AIType.Negamax)
+                {
+                    this.AI1 = new AI(this, 'AI1','Minmax');
+                    this.AI2 = new AI(this, 'AI2','Random');
+                    this.AIvAIGame(this.AI1, this.AI2, "Negamax", false);
                 }
             }
         }
@@ -218,6 +233,10 @@ export default class BoardScene extends Phaser.Scene
             this.AIvAI.destroy();
             this.PvAI.destroy();
             this.MINIMAXAIvAI.destroy();
+            this.NEGAMAXAIvAI.destroy();
+            this.RandomText.destroy();
+            this.MinimaxText.destroy();
+            this.NegamaxText.destroy();
         }
 
         gameOver()
@@ -226,16 +245,19 @@ export default class BoardScene extends Phaser.Scene
             {
 				if(this.AIType.Random)
                 {
-				this.GoThroughBoardCountingScore();
-                GameOverText = this.add.text(897,350,"Wynik Białego: " + this.AI1.score + "\nWynik Czarnego: " + this.AI2.score, Style);
+                    this.GoThroughBoardCountingScore();
+                    GameOverText = this.add.text(897,350,"Wynik Białego: " + this.AI1.score + "\nWynik Czarnego: " + this.AI2.score, Style);
 				}
-				
 				else if(this.AIType.Minimax)
                 {
-				this.GoThroughBoardCountingScore();
-                GameOverText = this.add.text(897,350,"Wynik Białego: " + this.AI2.score + "\nWynik Czarnego: " + this.AI1.score, Style);
+                    this.GoThroughBoardCountingScore();
+                    GameOverText = this.add.text(897,350,"Wynik Random: " + this.AI2.score + "\nWynik Minimax: " + this.AI1.score, Style);
 				}
-               
+                else if(this.AIType.Negamax)
+                {
+                    this.GoThroughBoardCountingScore();
+                    GameOverText = this.add.text(897,350,"Wynik Random: " + this.AI2.score + "\nWynik Negamax: " + this.AI1.score, Style); 
+                }
             }
 
             if(this.numberofAI == 1)
@@ -261,13 +283,9 @@ export default class BoardScene extends Phaser.Scene
 					if(this.boardArray[x][y].PawnBase != undefined && TempboardArray[x][y] != 1)
 					{
 						this.boardArray[x][y].PawnBase.CheckScoreSetup(this.boardArray[x][y],1,TempboardArray);	
-					
-					
 					}
 				}	
-			}
-		
-			
+			}	
 		}
 		
         
@@ -376,8 +394,6 @@ export default class BoardScene extends Phaser.Scene
         {
             this.GoThroughBoardCountingScore();
         }
-		
-		
 		
 		checkgoddamnboard()
 		{

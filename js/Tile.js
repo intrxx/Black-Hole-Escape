@@ -30,7 +30,6 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
         
         this.sprite.on('pointerdown', () => {
             if(this.scene.numberofAI == 0) {
-		    if(this.scene.bGameHasStarted == false) { return;}
 			if(this.PawnBase == null && this.scene.player1.numberOfMoves > 0)
 			{
                 BlackNotification.setVisible(false);
@@ -63,7 +62,6 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
                 } 
                 if(this.scene.player1.numberOfMoves == 0) 
                 {
-                    console.log("Score after player 1: " + this.scene.CheckWhoHasMoreScore());
                     this.scene.player2.numberOfMoves = 2;
                     this.scene.player1.bIsFirstTilePlaced = false;
                 }
@@ -102,7 +100,6 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
                 }
                 if(this.scene.player2.numberOfMoves == 0) 
                 {
-                    console.log("Score after player 2: " + this.scene.CheckWhoHasMoreScore());
                     this.scene.player1.numberOfMoves = 2;
                     this.scene.player1.bIsFirstTilePlaced = false;
                 }
@@ -110,7 +107,6 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
         } 
         else if(this.scene.numberofAI == 1)
         {
-            if(this.scene.bGameHasStarted == false) { return;}
             if(this.PawnBase == null && this.scene.player1.numberOfMoves > 0)
 			{
                 if(this.scene.player1.bIsFirstTilePlaced == false) 
@@ -137,7 +133,7 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
                     {
                         this.scene.player1.bIsFirstTilePlaced = false;
 
-                        this.scene.AI1.aiMakeFirstOptimalMove();
+                        this.scene.AI1.aiMakeFirstMinimaxOptimalMove();
 
                         if(this.scene.CheckHowManyMovesPossible() == 0)
 					    {
