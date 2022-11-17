@@ -182,7 +182,6 @@ export default class BoardScene extends Phaser.Scene
                 
                 this.AIvAIGame(FirstAI, SecondAI, "Negamax", bIsAlgorithTurn);     
             }
-            
         }
 
         startGame(numberOfAI)

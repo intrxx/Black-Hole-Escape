@@ -1,6 +1,6 @@
 import PawnBase from "../js/PawnBase.js"
 
-let maxDepth = 3;
+let maxDepth = 4;
 
 export default class AI 
 {
@@ -400,11 +400,11 @@ export default class AI
                     
 					if (this.scene.getNumberOfAI() == 2)
 					{
-                    optimalSecondMoveScore = this.aiMakeSecondNegamaxOptimalMove(j, i, this.scene.AI2, true, 0, true, true);
+                    optimalSecondMoveScore = this.aiMakeSecondNegamaxOptimalMove(j, i, this.scene.AI2, true, 0, 1, true);
 					}
 					else
 					{
-					optimalSecondMoveScore = this.aiMakeSecondNegamaxOptimalMove(j, i, this.scene.player1, true, 0, true, true);
+					optimalSecondMoveScore = this.aiMakeSecondNegamaxOptimalMove(j, i, this.scene.player1, true, 0, 1, true);
 					}
 				
                     this.tile = this.scene.boardArray[j][i];
@@ -445,25 +445,16 @@ export default class AI
         this.scene.saveCurrentScore();
     }
 
-    aiMakeSecondNegamaxOptimalMove(j, i, owner, bCallMiniMax, depth, isMaximizing, bFirstCall)
+    aiMakeSecondNegamaxOptimalMove(j, i, owner, bCallNegaMax, depth, sign, bFirstCall)
     {
         let optimalMove;
         let XCord;
         let YCord;
         let FirstCheck;
 		let score;
-		let bCheckOptimalScore;
 		let optimalScore;
-
-        if (isMaximizing)
-        {
-            optimalScore = -Infinity;
-        }
-        else 
-        {
-            optimalScore = Infinity;
-        }
-
+        optimalScore = -Infinity;
+       
         for(let z = 0; z < 4; z++) 
         {
             switch (z)
@@ -496,25 +487,17 @@ export default class AI
                 this.scene.boardArray[YCord][XCord].bIsTaken = true;
                 this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, '1', owner);
                 
-                if(bCallMiniMax == true)
+                if(bCallNegaMax == true)
                 {
                     if(depth < maxDepth)
                     {
-                        if (this.scene.getNumberOfAI() == 2 && isMaximizing == false)
+                        if (this.scene.getNumberOfAI() == 2)
                         {
-                            score = this.minimax(depth, true, this.scene.AI1);	
+                            score = this.negamax(depth, sign, this.scene.AI1);	
                         }
-                        else if(this.scene.getNumberOfAI() == 2 && isMaximizing == true)
+                        else if(this.scene.getNumberOfAI() == 1)
                         {
-                            score = this.minimax(depth, false, this.scene.AI2);
-                        }
-                        else if(this.scene.getNumberOfAI() == 1 && isMaximizing == true)
-                        {
-                            score = this.minimax(depth, false, this.scene.player1);
-                        }
-                        else if(this.scene.getNumberOfAI() == 1 && isMaximizing == false)
-                        {
-                            score = this.minimax(depth, true, this.scene.AI1);	
+                            score = this.negamax(depth, sign, this.scene.player1);
                         }
                     }
                     else
@@ -527,20 +510,11 @@ export default class AI
                     score = this.scene.CheckWhoHasMoreScore();
                 }
 
-                if (isMaximizing)
-                {
-                    bCheckOptimalScore = (score >  optimalScore);
-                }
-                else if(!isMaximizing)
-                {
-                    bCheckOptimalScore = (score <  optimalScore);
-                }
-
                 this.tile = this.scene.boardArray[YCord][XCord];
                 this.tile.PawnBase = null;
                 this.scene.boardArray[YCord][XCord].bIsTaken = false;
                 
-                if(bCheckOptimalScore)
+                if(score > optimalScore)
                 {
                     optimalScore = score;
                     let tempI = XCord;
@@ -558,31 +532,23 @@ export default class AI
            
     }
 
-    negamax(depth, isMaximizing, owner)
+    negamax(depth, sign, owner)
     {
         let optimalScore;
         let ownerOfSecondPawn
         let score=0;
         
-        if(isMaximizing)
-        {
-            optimalScore = -Infinity;
-            ownerOfSecondPawn = this.scene.AI1;
-        }
-        else 
-        {
-            optimalScore = Infinity;
+        optimalScore = -Infinity;
             
-            if (this.scene.getNumberOfAI() == 2)
-            {
-                ownerOfSecondPawn = this.scene.AI2;
-            }
-            else
-            {
-                ownerOfSecondPawn = this.scene.player1;
-            }
+        if (this.scene.getNumberOfAI() == 2)
+        {
+            ownerOfSecondPawn = this.scene.AI2;
         }
-
+        else
+        {
+            ownerOfSecondPawn = this.scene.player1;
+        }
+        
         for(let i = 0; i < 7; i++)
         {
             for(let j = 0; j < 7; j++)
@@ -596,31 +562,21 @@ export default class AI
                     if(depth < maxDepth)
                     {
                         depth++;
-                        score = this.aiMakeSecondNegamaxOptimalMove(j, i, ownerOfSecondPawn, true, depth, isMaximizing, false);
+                        score = this.aiMakeSecondNegamaxOptimalMove(j, i, ownerOfSecondPawn, true, depth, -sign, false);
                     }
                     else 
                     {
                         score = this.scene.CheckWhoHasMoreScore();
                     }
 
-                    if(isMaximizing)
+                    if(score > optimalScore)
                     {
-                        if(score > optimalScore)
-                        {
-                            optimalScore = score;     
-                        }
-                                        
-                    } 
-                    else if(!isMaximizing)
-                    {
-                        if(score < optimalScore)
-                        {
-                            optimalScore = score;        
-                        } 
+                        optimalScore = score;     
                     }
-                        this.tile = this.scene.boardArray[j][i];
-                        this.tile.PawnBase = null;
-                        this.scene.boardArray[j][i].bIsTaken = false;
+                                        
+                    this.tile = this.scene.boardArray[j][i];
+                    this.tile.PawnBase = null;
+                    this.scene.boardArray[j][i].bIsTaken = false;
                 }   
             }
         } 
