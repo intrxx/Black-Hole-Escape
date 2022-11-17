@@ -53,7 +53,6 @@ export default class AI
 					Player2 = this.scene.AI1;
                 } 
             }  
-			
 			this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'WhitePiece', Player1);
             this.aiMakeSecondRandomMove(Player2, randomX, randomY);   
          }
@@ -100,7 +99,6 @@ export default class AI
                     console.log("Fail reading random number")
                     break;
 			}
-				
 				if(cordIf && (this.scene.boardArray[xCord][yCord].bIsTaken == false))
 				{
 				this.tile = this.scene.boardArray[xCord][yCord];
@@ -132,12 +130,12 @@ export default class AI
             {
                 if(this.scene.boardArray[j][i].bIsTaken == false && this.scene.CheckIfAnyFreeTilesAround(j, i))
                 {
-                    //Stawiamy pierwszy pionek
+                    //Mark the spot with first pawn
                     this.tile = this.scene.boardArray[j][i];
                     this.scene.boardArray[j][i].bIsTaken = true;
                     this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, '1', this.scene.AI1);
                     
-                    //Wchodzimy do funkcji ktora stawia drugi pionek i sprawdza score z takim ulozeniem
+                    //Enter the function that places second pawn and call minimax in it
 					if (this.scene.getNumberOfAI() == 2)
 					{
                     optimalSecondMoveScore = this.aiMakeSecondOptimalMove(j, i, this.scene.AI2, true, 0, true, true);
@@ -147,12 +145,11 @@ export default class AI
 					optimalSecondMoveScore = this.aiMakeSecondOptimalMove(j, i, this.scene.player1, true, 0, true, true);
 					}
 				
-                    //Czyscimy postawiony pionek
+                    //Unmark the spot
                     this.tile = this.scene.boardArray[j][i];
                     this.tile.PawnBase = null;
                     this.scene.boardArray[j][i].bIsTaken = false;
                     
-                    //Porownujemy scory, jesli jest wiekrzy niz dotychczasowy score optymalny, nadpisujemy score optymalny i przypisujemy cordy
                     if(optimalSecondMoveScore.optimalScore > optimalScore)
                     {
                         optimalScore = optimalSecondMoveScore.optimalScore;
@@ -165,7 +162,7 @@ export default class AI
                 }   
             }
         }
-        //Stawiamy pionki na optymalnych miejscach
+        //Place the pawn on the optimal tiles
         if(this.scene.CheckHowManyMovesPossible() > 0)
         {
 			
@@ -183,9 +180,6 @@ export default class AI
 			{
 			this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'WhitePiece', this.scene.player1);	
 			}
-			
-			//console.log("--------------------------------------------");
-			//console.log("Sprawdzam Kordy X:" + optimalMove.i + " Y:" + optimalMove.j);
 			this.scene.CheckWhoHasMoreScore();
             
         }
@@ -240,19 +234,14 @@ export default class AI
             
             if((FirstCheck == true) && (this.scene.boardArray[YCord][XCord].bIsTaken == false))
             {
-            
              //Do the move 
              this.tile = this.scene.boardArray[YCord][XCord];
              this.scene.boardArray[YCord][XCord].bIsTaken = true;
              this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, '1', owner);
             
-             //console.log("-------------------------------------------------");
-             //console.log("x: " + YCord + " y: " + (XCord));
-            
-                //Call minimax
+            //Call minimax
               if(bCallMiniMax == true)
              {
-               // console.log("glebokosc: " + depth)
 				if(depth < maxDepth)
                 {
                     if (this.scene.getNumberOfAI() == 2 && isMaximizing == false)
@@ -279,12 +268,8 @@ export default class AI
              }
              else
              {
-				 //console.log("Sprawdzam Kordy X:" + i + " Y:" + j);
                  score = this.scene.CheckWhoHasMoreScore();
              }
-
-             //console.log("Score w second movie: " + score)
-            //Checks for score
 
             if (isMaximizing)
             {
@@ -295,18 +280,12 @@ export default class AI
                 bCheckOptimalScore = (score <  optimalScore);
             }
 
-
-             //Undo the move
              this.tile = this.scene.boardArray[YCord][XCord];
              this.tile.PawnBase = null;
              this.scene.boardArray[YCord][XCord].bIsTaken = false;
              
-             //Bind the score
-            // console.log("Dziwny bool: " + bCheckOptimalScore)
-
              if(bCheckOptimalScore)
              {
-                //console.log("CheckOptimaScore:" + score + " isMaximizing:" + isMaximizing + " optimalScore: " + optimalScore);
                  optimalScore = score;
                  let tempI = XCord;
                  let tempJ = YCord;
@@ -317,29 +296,18 @@ export default class AI
 
         if (bFirstCall)
         {
-            //console.log("Zvvracam")
             return optimalMove;    
         }
-        else
-        {
-            if (optimalScore == Infinity || optimalScore == -Infinity)
-            {
-            // console.log("Zwrocilo infnity second move, score:" +score + " bMaximazing:" + isMaximizing ); 
-            }
-           // console.log("optimalScore returnowany w drugim ruchu: " + optimalScore)
-            return  optimalScore;
-        }   
+        return  optimalScore;
+           
     }
-    
     
     minimax(depth, isMaximizing, owner)
     {
-    let optimalScore;
-    let ownerOfSecondPawn
-    let score=0;
-    
-    //console.log("Czy maxymalizuje? " + isMaximizing)
-
+        let optimalScore;
+        let ownerOfSecondPawn
+        let score=0;
+        
         if(isMaximizing)
         {
             optimalScore = -Infinity;
@@ -347,80 +315,67 @@ export default class AI
         }
         else 
         {
-              optimalScore = Infinity;
-           
+            optimalScore = Infinity;
+            
             if (this.scene.getNumberOfAI() == 2)
-			{
-				ownerOfSecondPawn = this.scene.AI2;
-			}
-			else
-			{
-				ownerOfSecondPawn = this.scene.player1;
-			}
+            {
+                ownerOfSecondPawn = this.scene.AI2;
+            }
+            else
+            {
+                ownerOfSecondPawn = this.scene.player1;
+            }
         }
 
-         for(let i = 0; i < 7; i++)
+        for(let i = 0; i < 7; i++)
         {
             for(let j = 0; j < 7; j++)
             {
                 if(this.scene.boardArray[j][i].bIsTaken == false && this.scene.CheckIfAnyFreeTilesAround(j, i))
                 {
-                    //Stawiamy pierwszego pionka
-
-                    //let score; usun komentarz
                     this.tile = this.scene.boardArray[j][i];
                     this.scene.boardArray[j][i].bIsTaken = true;
                     this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, '1', owner);
+            
+                    if(depth < maxDepth)
+                    {
+                        depth++;
+                        score = this.aiMakeSecondOptimalMove(j, i, ownerOfSecondPawn, true, depth, isMaximizing, false);
+                    }
+                    else 
+                    {
+                        score = this.scene.CheckWhoHasMoreScore();
+                    }
 
-                    //Wchodzimy do funkcji ktora stawia drugiego i wywoluje rekurencyjnie minimaxa
-                        
-                        if(depth < maxDepth)
+                    if(isMaximizing)
+                    {
+                        if(score > optimalScore)
                         {
-							depth++;
-                            score = this.aiMakeSecondOptimalMove(j, i, ownerOfSecondPawn, true, depth, isMaximizing, false);
+                            optimalScore = score;     
                         }
-                        else 
+                                        
+                    } 
+                    else if(!isMaximizing)
+                    {
+                        if(score < optimalScore)
                         {
-							//console.log("Sprawdzam Kordy X:" + i + " Y:" + j);
-                            //console.log("Score po CheckWhoHasMoreScore: " + score)
-                            score = this.scene.CheckWhoHasMoreScore();
-                        }
-
-                       //console.log("Minmax Score: "+ score + " isMaximizing " + isMaximizing);  
-
-                        if(isMaximizing)
-                        {
-                            if(score > optimalScore)
-                            {
-                                optimalScore = score;
-                               // console.log("optymalny score przypisany w true: " + optimalScore)
-                            }
-                                     
+                            optimalScore = score;        
                         } 
-                        else if(!isMaximizing)
-                        {
-                            if(score < optimalScore)
-                            {
-                                optimalScore = score;
-                                //console.log("optymalny score przypisany w false: " + optimalScore)
-                            } 
-                        }
+                    }
                         this.tile = this.scene.boardArray[j][i];
                         this.tile.PawnBase = null;
                         this.scene.boardArray[j][i].bIsTaken = false;
-                    }   
-                }
-            } 
-
-            if (optimalScore == Infinity || optimalScore == -Infinity)
-            {
-                return optimalScore = 0;
-             //console.log("Zwrocilo infnity minmax, score:" +score + " bMaximazing:" + isMaximizing); 
+                }   
             }
-            //console.log("optymalny score returnowany: " + optimalScore)
-            return optimalScore;    
+        } 
+
+        if (optimalScore == Infinity || optimalScore == -Infinity)
+        {
+            return optimalScore = 0;     
         }
+            
+            return optimalScore;    
+    }
     //END OF MINIMAX AI
     //----------------------------------------------------------------------------------------------------------------------------------------------
-
 }
