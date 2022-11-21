@@ -49,7 +49,7 @@ export default class AI
                 }
                 else if(this.scene.AIType.Minimax || this.scene.AIType.Negamax)
                 {
-					Player1 =  this.scene.AI2;
+					Player1 = this.scene.AI2;
 					Player2 = this.scene.AI1;
                 } 
             }  
@@ -367,7 +367,7 @@ export default class AI
                 }   
             }
         } 
-
+        
         if (optimalScore == Infinity || optimalScore == -Infinity)
         {
             return optimalScore = 0;     
@@ -491,13 +491,21 @@ export default class AI
                 {
                     if(depth < maxDepth)
                     {
-                        if (this.scene.getNumberOfAI() == 2)
+                        if (this.scene.getNumberOfAI() == 2 && sign == -1)
                         {
-                            score = this.negamax(depth, sign, this.scene.AI1);	
+                            score = this.negamax(depth, 1, this.scene.AI1);	
                         }
-                        else if(this.scene.getNumberOfAI() == 1)
+                        else if(this.scene.getNumberOfAI() == 2 && sign == 1)
                         {
-                            score = this.negamax(depth, sign, this.scene.player1);
+                            score = -this.negamax(depth, -1, this.scene.AI2)
+                        }
+                        else if(this.scene.getNumberOfAI() == 1 && sign == 1)
+                        {
+                            score = -this.negamax(depth, -1, this.scene.player1);
+                        }
+                        else if(this.scene.getNumberOfAI() == 1 && sign == -1)
+                        {
+                            score = this.negamax(depth, 1, this.scene.AI1);
                         }
                     }
                     else
@@ -562,11 +570,11 @@ export default class AI
                     if(depth < maxDepth)
                     {
                         depth++;
-                        score = this.aiMakeSecondNegamaxOptimalMove(j, i, ownerOfSecondPawn, true, depth, -sign, false);
+                        score = -this.aiMakeSecondNegamaxOptimalMove(j, i, ownerOfSecondPawn, true, depth, sign, false);
                     }
                     else 
                     {
-                        score = this.scene.CheckWhoHasMoreScore();
+                        score = -this.scene.CheckWhoHasMoreScore();
                     }
 
                     if(score > optimalScore)
@@ -580,7 +588,7 @@ export default class AI
                 }   
             }
         } 
-
+       
         if (optimalScore == Infinity || optimalScore == -Infinity)
         {
             return optimalScore = 0;     

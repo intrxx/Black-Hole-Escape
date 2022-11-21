@@ -219,7 +219,7 @@ export default class BoardScene extends Phaser.Scene
                 }
                 else if(this.AIType.Negamax)
                 {
-                    this.AI1 = new AI(this, 'AI1','Minmax');
+                    this.AI1 = new AI(this, 'AI1','Negamax');
                     this.AI2 = new AI(this, 'AI2','Random');
                     this.AIvAIGame(this.AI1, this.AI2, "Negamax", false);
                 }
