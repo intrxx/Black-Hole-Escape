@@ -5,6 +5,7 @@ import AI from "../js/AI.js"
 let GameOverText;
 let ButtonDescription;
 let Style;
+let MaxDepth;
 
 export default class BoardScene extends Phaser.Scene 
 {
@@ -32,7 +33,10 @@ export default class BoardScene extends Phaser.Scene
         this.load.image('PvP', '../assets/PvP.png');
         this.load.image('PvAI', '../assets/PvAI.png');
         this.load.image('AIvAI', '../assets/AIvAI.png');
-        this.load.image('Restart', '../assets/Restart.png')
+		this.load.image('PvAI', '../assets/PvAI.png');
+        this.load.image('Mniej', '../assets/Mniej.png');
+		this.load.image('Wiecej', '../assets/Wiecej.png');
+		this.load.image('Restart', '../assets/Restart.png');
 
     }
 
@@ -44,6 +48,11 @@ export default class BoardScene extends Phaser.Scene
         let Random = true;
         let Minimax = true;
         let Negamax = true;
+		let StyleForMaxDepth = {font: "50px Arial"}
+		if(this.MaxDepth == undefined)
+		{
+		this.MaxDepth = 3;	
+		}
 
         this.PvP = this.add.image(1050, 690, 'PvP').setInteractive().setScale(0.6);
         this.PvP.on('pointerdown', () => {
@@ -55,8 +64,9 @@ export default class BoardScene extends Phaser.Scene
         this.PvAI = this.add.image(1050, 790, 'PvAI').setInteractive().setScale(0.6);
         this.PvAI.on('pointerdown', () => {
             this.numberofAI = 1;
+			this.destroyButtons();
             this.startGame(1);
-            this.destroyButtons();
+            
         });
 
         this.RandomText = this.add.text(1020,160,"RANDOM");
@@ -64,34 +74,67 @@ export default class BoardScene extends Phaser.Scene
         this.AIvAI.on('pointerdown', () => {
             this.numberofAI = 2;
             this.AIType = {Random};
+			this.destroyButtons();
             this.startGame(2);
-            this.destroyButtons();
         });
 
         this.MinimaxText = this.add.text(1015,250,"MINIMAX");
         this.MINIMAXAIvAI = this.add.image(1050 ,290 , 'AIvAI').setInteractive().setScale(0.4);
         this.MINIMAXAIvAI.on('pointerdown', () => {
-            this.numberofAI = 2;
+            this.destroyButtons();
+			this.numberofAI = 2;
             this.AIType = {Minimax};
             this.startGame(2);
-            this.destroyButtons();
         })
 
         this.NegamaxText = this.add.text(1015,341,"NEGAMAX");
         this.NEGAMAXAIvAI = this.add.image(1050 ,380 , 'AIvAI').setInteractive().setScale(0.4);
         this.NEGAMAXAIvAI.on('pointerdown', () => {
-            this.numberofAI = 2;
+            this.destroyButtons();
+			this.numberofAI = 2;
             this.AIType = {Negamax};
             this.startGame(2);
-            this.destroyButtons();
         })
 
         this.ResetButton = this.add.image(1050, 38, 'Restart').setInteractive().setScale(0.4);
         this.ResetButton.on('pointerdown', () => {
             this.scene.restart();
         });
-   
-        Style = {font: "30px Arial"}
+		
+		
+		this.DepthText = this.add.text(1030,431,"DEPTH");
+		this.MaxDepthText = this.add.text(1039,445,this.MaxDepth,StyleForMaxDepth);
+        this.LessButton = this.add.image(1005 ,470 , 'Mniej').setInteractive().setScale(0.4);
+        this.LessButton.on('pointerdown', () => {
+			if(this.MaxDepth > 0)
+			{
+				this.MaxDepth--;
+				this.MaxDepthText.text = this.MaxDepth;
+			}
+			else
+			{
+			  this.MaxDepth = 5;
+			  this.MaxDepthText.text = this.MaxDepth;
+			}
+		});
+			
+			
+		this.MoreButton = this.add.image(1100 ,470 , 'Wiecej').setInteractive().setScale(0.4);
+        this.MoreButton.on('pointerdown', () => {
+			if(this.MaxDepth < 5)
+			{
+				this.MaxDepth++;
+				this.MaxDepthText.text = this.MaxDepth;
+			}
+			else
+			{
+			  this.MaxDepth = 0;
+			  this.MaxDepthText.text = this.MaxDepth;
+			}	
+            
+        });
+		
+      Style = {font: "30px Arial"}
     }
 
     createBoard(numberOfColumns) 
@@ -219,7 +262,7 @@ export default class BoardScene extends Phaser.Scene
                 }
                 else if(this.AIType.Negamax)
                 {
-                    this.AI1 = new AI(this, 'AI1','Negamax');
+                    this.AI1 = new AI(this, 'AI1','Minmax');
                     this.AI2 = new AI(this, 'AI2','Random');
                     this.AIvAIGame(this.AI1, this.AI2, "Negamax", false);
                 }
@@ -236,6 +279,10 @@ export default class BoardScene extends Phaser.Scene
             this.RandomText.destroy();
             this.MinimaxText.destroy();
             this.NegamaxText.destroy();
+			this.LessButton.destroy();
+			this.MoreButton.destroy();
+			this.MaxDepthText.destroy();
+			this.DepthText.destroy();
         }
 
         gameOver()

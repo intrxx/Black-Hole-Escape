@@ -133,7 +133,7 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
                     {
                         this.scene.player1.bIsFirstTilePlaced = false;
 
-                        this.scene.AI1.aiMakeFirstNegamaxOptimalMove();
+                        this.scene.AI1.aiMakeFirstMinimaxOptimalMove();
 
                         if(this.scene.CheckHowManyMovesPossible() == 0)
 					    {

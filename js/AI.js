@@ -1,6 +1,5 @@
 import PawnBase from "../js/PawnBase.js"
 
-let maxDepth = 4;
 
 export default class AI 
 {
@@ -19,7 +18,7 @@ export default class AI
 		this.shapeOnAvr = 0;
 		this.secondBigShape = 0;
     }
-
+	
     //----------------------------------------------------------------------------------------------------------------------------------------------
     //START OF RANDOM AI
 
@@ -49,7 +48,7 @@ export default class AI
                 }
                 else if(this.scene.AIType.Minimax || this.scene.AIType.Negamax)
                 {
-					Player1 = this.scene.AI2;
+					Player1 =  this.scene.AI2;
 					Player2 = this.scene.AI1;
                 } 
             }  
@@ -241,7 +240,7 @@ export default class AI
               //Call minimax
               if(bCallMiniMax == true)
               {
-				if(depth < maxDepth)
+				if(depth < this.scene.MaxDepth)
                 {
                     if (this.scene.getNumberOfAI() == 2 && isMaximizing == false)
                     {
@@ -336,7 +335,7 @@ export default class AI
                     this.scene.boardArray[j][i].bIsTaken = true;
                     this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, '1', owner);
             
-                    if(depth < maxDepth)
+                    if(depth < this.scene.MaxDepth)
                     {
                         depth++;
                         score = this.aiMakeSecondMinimaxOptimalMove(j, i, ownerOfSecondPawn, true, depth, isMaximizing, false);
@@ -367,7 +366,7 @@ export default class AI
                 }   
             }
         } 
-        
+
         if (optimalScore == Infinity || optimalScore == -Infinity)
         {
             return optimalScore = 0;     
@@ -489,23 +488,15 @@ export default class AI
                 
                 if(bCallNegaMax == true)
                 {
-                    if(depth < maxDepth)
+                    if(depth < this.scene.MaxDepth)
                     {
-                        if (this.scene.getNumberOfAI() == 2 && sign == -1)
+                        if (this.scene.getNumberOfAI() == 2)
                         {
-                            score = this.negamax(depth, 1, this.scene.AI1);	
+                            score = this.negamax(depth, sign, this.scene.AI1);	
                         }
-                        else if(this.scene.getNumberOfAI() == 2 && sign == 1)
+                        else if(this.scene.getNumberOfAI() == 1)
                         {
-                            score = -this.negamax(depth, -1, this.scene.AI2)
-                        }
-                        else if(this.scene.getNumberOfAI() == 1 && sign == 1)
-                        {
-                            score = -this.negamax(depth, -1, this.scene.player1);
-                        }
-                        else if(this.scene.getNumberOfAI() == 1 && sign == -1)
-                        {
-                            score = this.negamax(depth, 1, this.scene.AI1);
+                            score = this.negamax(depth, sign, this.scene.player1);
                         }
                     }
                     else
@@ -567,14 +558,14 @@ export default class AI
                     this.scene.boardArray[j][i].bIsTaken = true;
                     this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, '1', owner);
             
-                    if(depth < maxDepth)
+                    if(depth < this.scene.MaxDepth)
                     {
                         depth++;
-                        score = -this.aiMakeSecondNegamaxOptimalMove(j, i, ownerOfSecondPawn, true, depth, sign, false);
+                        score = this.aiMakeSecondNegamaxOptimalMove(j, i, ownerOfSecondPawn, true, depth, -sign, false);
                     }
                     else 
                     {
-                        score = -this.scene.CheckWhoHasMoreScore();
+                        score = this.scene.CheckWhoHasMoreScore();
                     }
 
                     if(score > optimalScore)
@@ -588,7 +579,7 @@ export default class AI
                 }   
             }
         } 
-       
+
         if (optimalScore == Infinity || optimalScore == -Infinity)
         {
             return optimalScore = 0;     
