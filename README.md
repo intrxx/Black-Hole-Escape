@@ -11,4 +11,5 @@ Implemented AI:
 
 - Random AI,
 - Minimax AI,
-- Negamax AI.
+- Negamax AI,
+- Alpha-Beta AI.
