@@ -27,7 +27,6 @@ export default class PawnBase extends Phaser.Physics.Arcade.Sprite {
 	//Funkcje zwiazane z zliaczaniem punktow START-----------------------------------------------------------------------------------------------------------------------
 	CheckOwner(tile)
 	{
-		tile.PawnBase.owner.shapeCount++;
 		return tile.PawnBase.owner;
 	}
 	
@@ -36,14 +35,15 @@ export default class PawnBase extends Phaser.Physics.Arcade.Sprite {
 		this.TempScore = 1;
 		//var TempboardArray = Array.from(Array(7), () => new Array(7));
 		TempboardArray[tile.indexX][tile.indexY] = 1;
-		let PawnOnwer=this.CheckOwner(tile)
+		let PawnOnwer = this.CheckOwner(tile)
+		
 		//console.log("Y" + tile.indexX +   " X" + tile.indexY + " Owner " + PawnOnwer.name);
 		this.CheckScore(tile,this.TempScore,TempboardArray,PawnOnwer)
 	}
 	
 	CheckScore(tile,TempScore,TempboardArray,PawnOnwer)
 	{
-
+		
 		this.CheckScoreLeft(tile.indexX, tile.indexY, PawnOnwer,this.TempScore,TempboardArray);
 		this.CheckScoreRight(tile.indexX, tile.indexY, PawnOnwer,this.TempScore,TempboardArray);
 		this.CheckScoreUp(tile.indexX, tile.indexY, PawnOnwer,this.TempScore,TempboardArray);
@@ -55,7 +55,7 @@ export default class PawnBase extends Phaser.Physics.Arcade.Sprite {
 	CheckScoreLeft(indexX, indexY, owner,TempScore,TempboardArray)
 	{
 		if(indexX > 0)
-		{ 
+		{ 	
 			if(this.scene.boardArray[indexX - 1][indexY].PawnBase != null && this.scene.boardArray[indexX - 1][indexY].PawnBase.owner.name == owner.name && TempboardArray[indexX - 1][indexY] != 1)
 			{
 				TempboardArray[indexX - 1][indexY] = 1;
