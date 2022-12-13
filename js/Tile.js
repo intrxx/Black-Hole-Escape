@@ -30,7 +30,7 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
         
         this.sprite.on('pointerdown', () => {
             if(this.scene.numberofAI == 0) {
-			if(this.PawnBase == null && this.scene.player1.numberOfMoves > 0)
+			if(this.scene.player1.numberOfMoves > 0)
 			{
                 BlackNotification.setVisible(false);
                 WhiteNotification.setVisible(true);
@@ -115,6 +115,7 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
                     {
                     this.PawnBase = new PawnBase(this.scene, this.XOffset, this.YOffset, 'WhitePiece', this.scene.player1);
                     this.scene.boardArray[this.indexX][this.indexY].bIsTaken = true;
+                    this.scene.boardArray[this.indexX][this.indexY].bIsFinalTaken = true;
                     this.scene.player1.bIsFirstTilePlaced = true;
                    
                     OldXindex = this.indexX;
@@ -127,13 +128,14 @@ export default class Tile extends Phaser.Physics.Arcade.Sprite
                 {                    
                     this.PawnBase = new PawnBase(this.scene, this.XOffset, this.YOffset, 'BlackPiece', this.scene.AI1);
                     this.scene.boardArray[this.indexX][this.indexY].bIsTaken = true;
+                    this.scene.boardArray[this.indexX][this.indexY].bIsFinalTaken = true;
                     this.scene.player1.numberOfMoves--; 
                    
                     if(this.scene.player1.numberOfMoves == 0) 
                     {
                         this.scene.player1.bIsFirstTilePlaced = false;
 
-                        this.scene.AI1.aiMakeFirstMinimaxOptimalMove();
+                        this.scene.AI1.MonteCarloSearch(100, this.scene.player1);
 
                         if(this.scene.CheckHowManyMovesPossible() == 0)
 					    {

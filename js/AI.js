@@ -20,7 +20,7 @@ export default class AI
     }
 	
     //----------------------------------------------------------------------------------------------------------------------------------------------
-    //START OF RANDOM AI
+    // START OF RANDOM AI
 
     aiMakeFirstRandomMove(AI)
     {   
@@ -33,6 +33,7 @@ export default class AI
          {
             this.tile = this.scene.boardArray[randomX][randomY];
             this.scene.boardArray[randomX][randomY].bIsTaken = true;
+            this.scene.boardArray[randomX][randomY].bIsFinalTaken = true;
             
             if(this.scene.getNumberOfAI() == 1)
             {
@@ -46,7 +47,7 @@ export default class AI
 					Player1 = this.scene.AI1;
 					Player2 = this.scene.AI2;
                 }
-                else if(this.scene.AIType == "Minimax" || this.scene.AIType == "Negamax"  || this.scene.AIType == "AlfaBeta")
+                else if(this.scene.AIType == "Minimax" || this.scene.AIType == "Negamax"  || this.scene.AIType == "AlfaBeta" || this.scene.AIType == "Montecarlo")
                 {
 					Player1 = this.scene.AI2;
 					Player2 = this.scene.AI1;
@@ -101,7 +102,8 @@ export default class AI
 				if(cordIf && (this.scene.boardArray[xCord][yCord].bIsTaken == false))
 				{
 				this.tile = this.scene.boardArray[xCord][yCord];
-                this.scene.boardArray[xCord][yCord].bIsTaken = true;       
+                this.scene.boardArray[xCord][yCord].bIsTaken = true; 
+                this.scene.boardArray[xCord][yCord].bIsFinalTaken = true;      
                 this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'BlackPiece', Owner);
                 bIsPlaced = true;	
 				}
@@ -110,9 +112,9 @@ export default class AI
         } while(bIsPlaced != true)    
     }
 
-    //END OF RANDOM AI
+    // END OF RANDOM AI
     //----------------------------------------------------------------------------------------------------------------------------------------------
-    //START OF MINIMAX AI
+    // START OF MINIMAX AI
 
     aiMakeFirstMinimaxOptimalMove() 
     {
@@ -375,9 +377,9 @@ export default class AI
             return optimalScore;    
     }
 
-    //END OF MINIMAX AI
+    // END OF MINIMAX AI
     //----------------------------------------------------------------------------------------------------------------------------------------------
-    //START OF NEGAMAX AI
+    // START OF NEGAMAX AI
 
     aiMakeFirstNegamaxOptimalMove() 
     {
@@ -588,9 +590,9 @@ export default class AI
             return optimalScore;    
     }
 
-    //END OF Negamax AI
+    // END OF Negamax AI
     //----------------------------------------------------------------------------------------------------------------------------------------------
-	//START OF ALFABETA AI
+	// START OF ALFABETA AI
 	
 	aiMakeFirstAlfaBetaOptimalMove() 
     {
@@ -884,8 +886,282 @@ export default class AI
 		return AlfaBetaArrayScore;
 		
 	}
-	//END OF ALFABETA AI
+
+	// END OF ALFABETA AI
     //----------------------------------------------------------------------------------------------------------------------------------------------
+    // START OF MONTE CARLO SEARCH
+
+    MonteCarloSearch(noOfSims, SecondPawnOwner)
+    {
+    let bestMove = {x: 0, y:0};
+    let secondMoveBestMove = {x: 0, y:0};
+    let bestPropability = -1;
+    let bIsFPlaced = false;  
+    let cordFIf;
+    let sI = 0;
+    let sJ = 0;   
+ 
+    for(let i = 0; i < 7; i++)
+    {
+        for(let j = 0; j < 7; j++)
+        {   
+            if(!(this.scene.CheckIfAnyFreeTilesAround(j, i))) continue;
+
+                this.tile = this.scene.boardArray[j][i];
+                this.scene.boardArray[j][i].bIsTaken = true;
+                this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, '1', this.scene.AI1);
+
+                bIsFPlaced = false;   
+                do
+                {
+                    let randomNum = Phaser.Math.Between(0, 3);
+                    switch (randomNum) 
+                    {
+                        case 0:
+                            cordFIf = (i+1 <= 6);
+                            sJ = (j);
+                            sI = (i+1);
+                            break;
+                        case 1:
+                            cordFIf = (i-1 >= 0);
+                            sJ = (j);
+                            sI = (i-1);
+                            break;
+                        case 2:
+                            cordFIf = (j+1 <= 6);
+                            sJ = (j+1);
+                            sI = (i);
+                            break;
+                        case 3:
+                            cordFIf = (j-1 >= 0);
+                            sJ = (j-1);
+                            sI = (i);
+                            break;    
+                    }
+                        if(cordFIf && (this.scene.boardArray[sJ][sI].bIsTaken == false))
+                        {
+                            this.tile = this.scene.boardArray[sJ][sI];
+                            this.scene.boardArray[sJ][sI].bIsTaken = true;       
+                            this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, '1', SecondPawnOwner);
+
+                            bIsFPlaced = true;	
+                        }
+                } while(bIsFPlaced != true) 
+               
+            let wining = 0;
+            
+            for(let x = 0; x < noOfSims; x++)
+            {
+                let nextPlayer = SecondPawnOwner;
+                let move = {j, i};
+                let secondMove = {sJ, sI};
+                //console.log("Move: x = " + secondMove.sJ + " y = " + secondMove.sI);
+                let cordIf;
+                let bIsPlaced = false;
+                
+                while(this.scene.CheckHowManyMovesPossible() != 0 )
+                {
+                    if(nextPlayer == this.scene.AI1)
+                    {
+                        do 
+                        {
+                            move.j = Phaser.Math.Between(0, 6);
+                            move.i = Phaser.Math.Between(0, 6); 
+    
+                        } while(!(this.scene.CheckIfAnyFreeTilesAround(move.j, move.i)))
+    
+                        //console.log("x: " + move.j + " y: " + move.i);
+                        this.tile = this.scene.boardArray[move.j][move.i];
+                        this.scene.boardArray[move.j][move.i].bIsTaken = true;
+                        this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, '1', this.scene.AI1);
+
+                        bIsPlaced = false;
+                        do
+                        {   
+                            let randomNum = Phaser.Math.Between(0, 3);
+                            switch (randomNum) 
+                            {
+                                case 0:
+                                        cordIf = (move.i+1 <= 6);
+                                        secondMove.sJ = (move.j);
+                                        secondMove.sI = (move.i+1);
+                
+                                    break;
+                                case 1:
+                                        cordIf = (move.i-1 >= 0);
+                                        secondMove.sJ = (move.j);
+                                        secondMove.sI = (move.i-1);
+                                    break;
+                                case 2:
+                                        cordIf = (move.j+1 <= 6);
+                                        secondMove.sJ = (move.j+1);
+                                        secondMove.sI = (move.i);
+                                    break;
+                                case 3:
+                                        cordIf = (move.j-1 >= 0);
+                                        secondMove.sJ = (move.j-1);
+                                        secondMove.sI = (move.i);
+                                    break;    
+                            }
+                                if(cordIf && (this.scene.boardArray[secondMove.sJ][secondMove.sI].bIsTaken == false))
+                                {
+                                    this.tile = this.scene.boardArray[secondMove.sJ][secondMove.sI];
+                                    this.scene.boardArray[secondMove.sJ][secondMove.sI].bIsTaken = true;       
+                                    this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, '1', SecondPawnOwner);
+
+                                    bIsPlaced = true;	
+                                }
+
+                                nextPlayer = SecondPawnOwner;
+                        } while(bIsPlaced != true)
+                    }
+                    else if(nextPlayer == SecondPawnOwner)
+                    {
+                        do 
+                        {
+                            move.j = Phaser.Math.Between(0, 6);
+                            move.i = Phaser.Math.Between(0, 6); 
+    
+                        } while(!this.scene.CheckIfAnyFreeTilesAround(move.j, move.i))
+                        
+                        //console.log("x: " + move.j + " y: " + move.i);
+                        
+                        this.tile = this.scene.boardArray[move.j][move.i];
+                        this.scene.boardArray[move.j][move.i].bIsTaken = true;
+                        this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, '1', this.scene.AI1);
+                        
+                        bIsPlaced = false;
+                        do
+                        {
+                            let randomNum = Phaser.Math.Between(0, 3);
+                            switch (randomNum) 
+                            {
+                                case 0:
+                                        cordIf = (move.i+1 <= 6);
+                                        secondMove.sJ = (move.j);
+                                        secondMove.sI = (move.i+1);
+                
+                                    break;
+                                case 1:
+                                        cordIf = (move.i-1 >= 0);
+                                        secondMove.sJ = (move.j);
+                                        secondMove.sI = (move.i-1);
+                                    break;
+                                case 2:
+                                        cordIf = (move.j+1 <= 6);
+                                        secondMove.sJ = (move.j+1);
+                                        secondMove.sI = (move.i);
+                                    break;
+                                case 3:
+                                        cordIf = (move.j-1 >= 0);
+                                        secondMove.sJ = (move.j-1);
+                                        secondMove.sI = (move.i);
+                                    break;       
+                            }
+                                if(cordIf && (this.scene.boardArray[secondMove.sJ][secondMove.sI].bIsTaken == false))
+                                {
+                                    this.tile = this.scene.boardArray[secondMove.sJ][secondMove.sI];
+                                    this.scene.boardArray[secondMove.sJ][secondMove.sI].bIsTaken = true;       
+                                    this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, '1', SecondPawnOwner);
+
+                                    bIsPlaced = true;	
+                                }
+
+                                nextPlayer = this.scene.AI1;
+                        } while(bIsPlaced != true)
+
+                    }
+
+                }
+
+                if(SecondPawnOwner == this.scene.AI2)
+                {
+                    let OldAI1Score = this.scene.AI1.score;
+                    let OldAI2Score = this.scene.AI2.score;
+    
+                    this.scene.GoThroughBoardCountingScore();
+    
+                    if(this.scene.AI1.score > this.scene.AI2.score) 
+                    {
+                        wining++;
+                    }
+    
+                    this.scene.AI1.score = OldAI1Score;
+                    this.scene.AI2.score = OldAI2Score;
+                }
+                else if(SecondPawnOwner == this.scene.player1)
+                {
+                    let OldAI1Score = this.scene.AI1.score;
+                    let OldPlayerScore = this.scene.player1.score;
+    
+                    this.scene.GoThroughBoardCountingScore();
+    
+                    if(this.scene.AI1.score > this.scene.player1.score) 
+                    {
+                        wining++;
+                    }
+    
+                    this.scene.AI1.score = OldAI1Score;
+                    this.scene.player1.score = OldPlayerScore; 
+                }
+                
+                for(let i = 0; i < 7; i++)
+                {
+                    for(let j = 0; j < 7; j++)
+                    {
+                        //console.log("x: " + j + " y: " + i + " Polozony: " + this.scene.boardArray[j][i].bIsFinalTaken)
+                        if(this.scene.boardArray[j][i].bIsFinalTaken === false)
+                        {
+                            this.tile = this.scene.boardArray[j][i];
+                            this.tile.PawnBase = null;
+                            this.scene.boardArray[j][i].bIsTaken = false;
+                        }  
+                    }
+                } 
+                
+            }
+                //console.log("Winings: " + wining)
+                let propability = wining / noOfSims;
+                //console.log("Propability: " + propability)
+
+                if(bestPropability < propability)
+                {
+                    //console.log("kurwa")
+                    bestPropability = propability;
+
+                    bestMove.x = j;
+                    bestMove.y = i;
+                    secondMoveBestMove.x = sJ;
+                    secondMoveBestMove.y = sI;
+                }
+                
+                
+                    this.tile = this.scene.boardArray[j][i];
+                    this.tile.PawnBase = null;
+                    this.scene.boardArray[j][i].bIsTaken = false;
+
+                    this.tile = this.scene.boardArray[sJ][sI];
+                    this.tile.PawnBase = null;
+                    this.scene.boardArray[sJ][sI].bIsTaken = false;
+                        
+        }
+    }
+
+   // console.log("Best move: x:" + bestMove.FtempJ + " y: " +bestMove.FtemiI);
+    this.tile = this.scene.boardArray[bestMove.x][bestMove.y];
+    this.scene.boardArray[bestMove.x][bestMove.y].bIsTaken = true;
+    this.scene.boardArray[bestMove.x][bestMove.y].bIsFinalTaken = true;
+    this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'BlackPiece', this.scene.AI1);
+
+   // console.log("Second Best move: x:" + secondMoveBestMove.tempJ + " y: " +secondMoveBestMove.tempI);
+    this.tile = this.scene.boardArray[secondMoveBestMove.x][secondMoveBestMove.y];
+    this.scene.boardArray[secondMoveBestMove.x][secondMoveBestMove.y].bIsTaken = true;
+    this.scene.boardArray[secondMoveBestMove.x][secondMoveBestMove.y].bIsFinalTaken = true;
+    this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'WhitePiece', SecondPawnOwner);
+  
+    }
 }
+
+
 
 

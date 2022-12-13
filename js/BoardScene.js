@@ -104,10 +104,19 @@ export default class BoardScene extends Phaser.Scene
             this.AIType = "AlfaBeta";
             this.startGame(2);
         })
+
+        this.MontecarloText = this.add.text(1000,440,"MONTE CARLO");
+        this.MontecarloAIvAI = this.add.image(1050 ,480 , 'AIvAI').setInteractive().setScale(0.4);
+        this.MontecarloAIvAI.on('pointerdown', () => {
+            this.destroyButtons();
+			this.numberofAI = 2;
+            this.AIType = "Montecarlo";
+            this.startGame(2);
+        })
 		
-		this.DepthText = this.add.text(1030,430,"DEPTH");
-		this.MaxDepthText = this.add.text(1040,445,this.MaxDepth,StyleForMaxDepth);
-        this.LessButton = this.add.image(1005 ,470 , 'Mniej').setInteractive().setScale(0.4);
+		this.DepthText = this.add.text(1030,527,"DEPTH");
+		this.MaxDepthText = this.add.text(1040,542,this.MaxDepth,StyleForMaxDepth);
+        this.LessButton = this.add.image(1005 ,570 , 'Mniej').setInteractive().setScale(0.4);
         this.LessButton.on('pointerdown', () => {
 			if(this.MaxDepth > 0)
 			{
@@ -126,7 +135,7 @@ export default class BoardScene extends Phaser.Scene
             this.scene.restart();
         });
 			
-		this.MoreButton = this.add.image(1100 ,470 , 'Wiecej').setInteractive().setScale(0.4);
+		this.MoreButton = this.add.image(1100 ,570 , 'Wiecej').setInteractive().setScale(0.4);
         this.MoreButton.on('pointerdown', () => {
 			if(this.MaxDepth < 5)
 			{
@@ -154,8 +163,6 @@ export default class BoardScene extends Phaser.Scene
 		this.arrayXIndex = 0;
 		this.arrayYIndex = 0;
 
-		this.numberOfPawns = 0;
-
         for(let i = 0; i < numberOfColumns; i++)
         {
 			this.arrayXIndex = 0;
@@ -173,6 +180,7 @@ export default class BoardScene extends Phaser.Scene
                 this.tile.indexX = j;
 				this.tile.indexY = i;
                 this.tile["bIsTaken"] = false;
+                this.tile["bIsFinalTaken"] = false;
                 this.boardArray[j][i] = this.tile;
                 offSetY += 115;
 				this.arrayXIndex++;
@@ -183,7 +191,21 @@ export default class BoardScene extends Phaser.Scene
 			}
 
         }
-
+        /*
+        CopyBoard(board)
+        {
+            let mapCopy = Array.from(Array(7), () => new Array(7));
+            for(let i = 0; i < 7; i++)
+            {
+                for(let j = 0; j < 7; j++)
+                {
+                    mapCopy[j][i] = [];
+                    mapCopy[j][i]["bIsTaken"] = board[j][i].bIsTaken;
+                }   
+            }
+            return mapCopy;
+        }
+        */
         AIvAIGame(FirstAI, SecondAI, AIType, bIsAlgorithTurn)
         {
             if(this.CheckHowManyMovesPossible() == 0)
@@ -202,6 +224,7 @@ export default class BoardScene extends Phaser.Scene
 						}
 						this.AIvAIGame(SecondAI, FirstAI, "Random", bIsAlgorithTurn);						
 					break;
+                    
 				case "Minimax":
 						if(bIsAlgorithTurn)
 						{
@@ -216,6 +239,7 @@ export default class BoardScene extends Phaser.Scene
 						
 						this.AIvAIGame(FirstAI, SecondAI, "Minimax", bIsAlgorithTurn);  				
 					break;
+
 				case "Negamax":
 						if(bIsAlgorithTurn)
 						{
@@ -228,7 +252,8 @@ export default class BoardScene extends Phaser.Scene
 							bIsAlgorithTurn = true;
 						}     
 						this.AIvAIGame(FirstAI, SecondAI, "Negamax", bIsAlgorithTurn);    
-					break;		
+					break;
+
 				case "AlfaBeta":
 						if(bIsAlgorithTurn)
 						{
@@ -243,54 +268,23 @@ export default class BoardScene extends Phaser.Scene
 						
 						this.AIvAIGame(FirstAI, SecondAI, "AlfaBeta", bIsAlgorithTurn);   				
 					break;						
+                        
+                case "Montecarlo":
+                        if(bIsAlgorithTurn)
+						{
+							FirstAI.MonteCarloSearch(200, SecondAI);
+							bIsAlgorithTurn = false;
+						}
+						else
+						{
+							SecondAI.aiMakeFirstRandomMove(SecondAI)
+							bIsAlgorithTurn = true;
+						} 
+                        this.AIvAIGame(FirstAI, SecondAI, "Montecarlo", bIsAlgorithTurn);       
+                        break;
+
 			}
 			
-			/*
-            if(AIType === "Random")
-            {
-                for(let i = 0; i < this.CheckHowManyMovesPossible(); i++)
-                {
-                    FirstAI.aiMakeFirstRandomMove(FirstAI)
-                }
-                this.AIvAIGame(SecondAI, FirstAI, "Random", bIsAlgorithTurn);
-            }
-
-            if(AIType === "Minimax")
-            {
-                if(bIsAlgorithTurn)
-                {
-                    FirstAI.aiMakeFirstMinimaxOptimalMove();
-                    bIsAlgorithTurn = false;
-                }
-                else
-                {
-                    SecondAI.aiMakeFirstRandomMove(SecondAI)
-                    bIsAlgorithTurn = true;
-                }     
-                
-                this.AIvAIGame(FirstAI, SecondAI, "Minimax", bIsAlgorithTurn);    
-            }
-
-            if(AIType === "Negamax")
-            {
-                if(bIsAlgorithTurn)
-                {
-                    FirstAI.aiMakeFirstNegamaxOptimalMove();
-                    bIsAlgorithTurn = false;
-                }
-                else
-                {
-                    SecondAI.aiMakeFirstRandomMove(SecondAI)
-                    bIsAlgorithTurn = true;
-                }     
-                
-                this.AIvAIGame(FirstAI, SecondAI, "Negamax", bIsAlgorithTurn);     
-            }
-			*/
-			
-			
-			
-
         }
 
         startGame(numberOfAI)
@@ -321,47 +315,33 @@ export default class BoardScene extends Phaser.Scene
 					
 						this.AI1 = new AI(this, 'AI1','Random');
 						this.AI2 = new AI(this, 'AI2','Random');
-						console.log("Wyswietl mnie: "+ this.AI1.name);
-						console.log("Wyswietl mnie: "+ this.AI2.name);
 						this.AIvAIGame(this.AI1, this.AI2, "Random", false);
 					break;
+
 					case "Minimax":
 						this.AI1 = new AI(this, 'AI1','Minmax');
 						this.AI2 = new AI(this, 'AI2','Random');
 						this.AIvAIGame(this.AI1, this.AI2, "Minimax", false);
 					break;
+
 					case "Negamax":
 						this.AI1 = new AI(this, 'AI1','Negamax');
 						this.AI2 = new AI(this, 'AI2','Random');
 						this.AIvAIGame(this.AI1, this.AI2, "Negamax", false);
 					break;
+
 					case "AlfaBeta":
 						this.AI1 = new AI(this, 'AI1','AlfaBeta');
 						this.AI2 = new AI(this, 'AI2','Random');
 						this.AIvAIGame(this.AI1, this.AI2, "AlfaBeta", false);
 					break;
+                    
+                    case "Montecarlo":
+                        this.AI1 = new AI(this, 'AI1','Montecarlo');
+						this.AI2 = new AI(this, 'AI2','Random');
+						this.AIvAIGame(this.AI1, this.AI2, "Montecarlo", false);
+					break;
 				}
-				
-				/*
-                if(this.AIType.Random)
-                {
-                    this.AI1 = new AI(this, 'AI1','Random');
-                    this.AI2 = new AI(this, 'AI2','Random');
-                    this.AIvAIGame(this.AI1, this.AI2, "Random", false);
-                }
-                else if(this.AIType.Minimax)
-                {
-                    this.AI1 = new AI(this, 'AI1','Minmax');
-                    this.AI2 = new AI(this, 'AI2','Random');
-                    this.AIvAIGame(this.AI1, this.AI2, "Minimax", false);
-                }
-                else if(this.AIType.Negamax)
-                {
-                    this.AI1 = new AI(this, 'AI1','Minmax');
-                    this.AI2 = new AI(this, 'AI2','Random');
-                    this.AIvAIGame(this.AI1, this.AI2, "Negamax", false);
-                }
-				*/
             }
         }
 
@@ -381,6 +361,8 @@ export default class BoardScene extends Phaser.Scene
 			this.MoreButton.destroy();
 			this.MaxDepthText.destroy();
 			this.DepthText.destroy();
+            this.MontecarloText.destroy();
+            this.MontecarloAIvAI.destroy();
         }
 
         gameOver()
@@ -393,36 +375,26 @@ export default class BoardScene extends Phaser.Scene
 						this.GoThroughBoardCountingScore();
 						GameOverText = this.add.text(897,350,"Wynik Białego: " + this.AI1.score + "\nWynik Czarnego: " + this.AI2.score, Style);
 					break;
+
 					case "Minimax":
 						this.GoThroughBoardCountingScore();
 						GameOverText = this.add.text(897,350,"Wynik Random: " + this.AI2.score + "\nWynik Minimax: " + this.AI1.score, Style);
 					break;
+
 					case "Negamax":
 						this.GoThroughBoardCountingScore();
-                    GameOverText = this.add.text(897,350,"Wynik Random: " + this.AI2.score + "\nWynik Negamax: " + this.AI1.score, Style); 
+                        GameOverText = this.add.text(897,350,"Wynik Random: " + this.AI2.score + "\nWynik Negamax: " + this.AI1.score, Style); 
 					break;
+
 					case "AlfaBeta":
 						this.GoThroughBoardCountingScore();
-                    GameOverText = this.add.text(897,350,"Wynik Random: " + this.AI2.score + "\nWynik AlfaBeta: " + this.AI1.score, Style); 
+                        GameOverText = this.add.text(897,350,"Wynik Random: " + this.AI2.score + "\nWynik AlfaBeta: " + this.AI1.score, Style); 
 					break;
+
+                    case "Montecarlo":
+                        this.GoThroughBoardCountingScore();
+                        GameOverText = this.add.text(897,350,"Wynik Random: " + this.AI2.score + "\nWynik Monte Carlo: " + this.AI1.score, Style);
 				}
-				/*
-				if(this.AIType.Random)
-                {
-                    this.GoThroughBoardCountingScore();
-                    GameOverText = this.add.text(897,350,"Wynik Białego: " + this.AI1.score + "\nWynik Czarnego: " + this.AI2.score, Style);
-				}
-				else if(this.AIType.Minimax)
-                {
-                    this.GoThroughBoardCountingScore();
-                    GameOverText = this.add.text(897,350,"Wynik Random: " + this.AI2.score + "\nWynik Minimax: " + this.AI1.score, Style);
-				}
-                else if(this.AIType.Negamax)
-                {
-                    this.GoThroughBoardCountingScore();
-                    GameOverText = this.add.text(897,350,"Wynik Random: " + this.AI2.score + "\nWynik Negamax: " + this.AI1.score, Style); 
-                }
-				*/
             }
 
             if(this.numberofAI == 1)
@@ -452,16 +424,40 @@ export default class BoardScene extends Phaser.Scene
 				}	
 			}	
 		}
-		
+
+        /*
+        GoThroughBoardCountingScoreCopy(board)
+		{
+			var TempboardArray = Array.from(Array(7), () => new Array(7));
+			for(let y = 0; y <= 6; y++)
+			{
+				for(let x = 0; x <= 6; x++)
+				{
+					if(board[x][y].PawnBase != undefined && TempboardArray[x][y] != 1)
+					{
+						board[x][y].PawnBase.CheckScoreSetup(board[x][y],1,TempboardArray);	
+					}
+				}	
+			}	
+		}
+		*/
         
         CheckIfAnyFreeTilesAround(TileX, TileY)
         {
-            return ((TileX+1 <= 6 && this.boardArray[TileX+1][TileY].bIsTaken == false) || 
+            return (this.boardArray[TileX][TileY].bIsTaken == false && ((TileX+1 <= 6 && this.boardArray[TileX+1][TileY].bIsTaken == false) || 
                     (TileX-1 >= 0 && this.boardArray[TileX-1][TileY].bIsTaken == false) || 
                     (TileY-1 >= 0 && this.boardArray[TileX][TileY-1].bIsTaken == false) || 
-                    (TileY+1 <= 6 && this.boardArray[TileX][TileY+1].bIsTaken == false))
+                    (TileY+1 <= 6 && this.boardArray[TileX][TileY+1].bIsTaken == false)))
         }
-
+        /*
+        CheckIfAnyFreeTilesAroundCopy(board, TileX, TileY)
+        {
+            return ((TileX+1 <= 6 && board[TileX+1][TileY].bIsTaken == false) || 
+                    (TileX-1 >= 0 && board[TileX-1][TileY].bIsTaken == false) || 
+                    (TileY-1 >= 0 && board[TileX][TileY-1].bIsTaken == false) || 
+                    (TileY+1 <= 6 && board[TileX][TileY+1].bIsTaken == false))
+        }
+        */
         CheckHowManyMovesPossible()
         {
         let numberOfMovesLeft = 0;
@@ -480,7 +476,27 @@ export default class BoardScene extends Phaser.Scene
             }
         return numberOfMovesLeft;
         }
-
+        
+        /*
+        CheckHowManyMovesPossibleCopy(board)
+        {
+            let numberOfMovesLeft = 0;
+                for(let i = 0; i < 7; i++)
+                {
+                    for(let j = 0; j < 7; j++)
+                    {
+                        if(board[j][i].bIsTaken == false)
+                        {
+                            if(this.CheckIfAnyFreeTilesAroundCopy(board,j,i)) 
+                           {
+                             numberOfMovesLeft++;
+                           } 
+                        }   
+                    }
+                }
+            return numberOfMovesLeft;
+        }
+        */
         getNumberOfAI()
         {
             return this.numberofAI;
@@ -579,7 +595,6 @@ export default class BoardScene extends Phaser.Scene
             }
 			
 		}
-		
 
     }
 
