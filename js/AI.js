@@ -905,12 +905,13 @@ export default class AI
     {
         for(let j = 0; j < 7; j++)
         {   
-            if(!(this.scene.CheckIfAnyFreeTilesAround(j, i))) continue;
+            // Do the first move
+            if(!(this.scene.CheckIfAnyFreeTilesAround(j, i) && this.scene.boardArray[j][i].bIsFinalTaken == false)) continue;
 
                 this.tile = this.scene.boardArray[j][i];
                 this.scene.boardArray[j][i].bIsTaken = true;
                 this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, '1', this.scene.AI1);
-
+                
                 bIsFPlaced = false;   
                 do
                 {
@@ -945,7 +946,7 @@ export default class AI
                             this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, '1', SecondPawnOwner);
 
                             bIsFPlaced = true;	
-                        }
+                        }   
                 } while(bIsFPlaced != true) 
                
             let wining = 0;
@@ -953,13 +954,13 @@ export default class AI
             for(let x = 0; x < noOfSims; x++)
             {
                 let nextPlayer = SecondPawnOwner;
-                let move = {j, i};
-                let secondMove = {sJ, sI};
-                //console.log("Move: x = " + secondMove.sJ + " y = " + secondMove.sI);
+                let move = {i, j};
+                let secondMove = {sI, sJ};
                 let cordIf;
                 let bIsPlaced = false;
                 
-                while(this.scene.CheckHowManyMovesPossible() != 0 )
+                // Simulate the game till end
+                while(this.scene.CheckHowManyMovesPossible() > 0 )
                 {
                     if(nextPlayer == this.scene.AI1)
                     {
@@ -968,9 +969,8 @@ export default class AI
                             move.j = Phaser.Math.Between(0, 6);
                             move.i = Phaser.Math.Between(0, 6); 
     
-                        } while(!(this.scene.CheckIfAnyFreeTilesAround(move.j, move.i)))
+                        } while(!(this.scene.CheckIfAnyFreeTilesAround(move.j, move.i) && this.scene.boardArray[j][i].bIsFinalTaken == false))
     
-                        //console.log("x: " + move.j + " y: " + move.i);
                         this.tile = this.scene.boardArray[move.j][move.i];
                         this.scene.boardArray[move.j][move.i].bIsTaken = true;
                         this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, '1', this.scene.AI1);
@@ -1022,9 +1022,7 @@ export default class AI
                             move.j = Phaser.Math.Between(0, 6);
                             move.i = Phaser.Math.Between(0, 6); 
     
-                        } while(!this.scene.CheckIfAnyFreeTilesAround(move.j, move.i))
-                        
-                        //console.log("x: " + move.j + " y: " + move.i);
+                        } while(!(this.scene.CheckIfAnyFreeTilesAround(move.j, move.i) && this.scene.boardArray[j][i].bIsFinalTaken == false))
                         
                         this.tile = this.scene.boardArray[move.j][move.i];
                         this.scene.boardArray[move.j][move.i].bIsTaken = true;
@@ -1066,26 +1064,24 @@ export default class AI
 
                                     bIsPlaced = true;	
                                 }
-
                                 nextPlayer = this.scene.AI1;
                         } while(bIsPlaced != true)
-
                     }
-
                 }
 
+                // Check the score
                 if(SecondPawnOwner == this.scene.AI2)
                 {
                     let OldAI1Score = this.scene.AI1.score;
                     let OldAI2Score = this.scene.AI2.score;
     
                     this.scene.GoThroughBoardCountingScore();
-    
+                    
+                    // Add to wining if AI won the simulation
                     if(this.scene.AI1.score > this.scene.AI2.score) 
                     {
                         wining++;
                     }
-    
                     this.scene.AI1.score = OldAI1Score;
                     this.scene.AI2.score = OldAI2Score;
                 }
@@ -1100,16 +1096,15 @@ export default class AI
                     {
                         wining++;
                     }
-    
                     this.scene.AI1.score = OldAI1Score;
                     this.scene.player1.score = OldPlayerScore; 
                 }
-                
+
+                // Clear the board of simulation
                 for(let i = 0; i < 7; i++)
                 {
                     for(let j = 0; j < 7; j++)
                     {
-                        //console.log("x: " + j + " y: " + i + " Polozony: " + this.scene.boardArray[j][i].bIsFinalTaken)
                         if(this.scene.boardArray[j][i].bIsFinalTaken === false)
                         {
                             this.tile = this.scene.boardArray[j][i];
@@ -1117,48 +1112,43 @@ export default class AI
                             this.scene.boardArray[j][i].bIsTaken = false;
                         }  
                     }
-                } 
-                
+                }           
             }
-                //console.log("Winings: " + wining)
-                let propability = wining / noOfSims;
-                //console.log("Propability: " + propability)
+            let propability = wining / noOfSims;
+             
+            // Assign the wining cords to best moves
+            if(propability > bestPropability)
+            {
+                bestPropability = propability;
+                bestMove.x = j;
+                bestMove.y = i;
+                secondMoveBestMove.x = sJ;
+                secondMoveBestMove.y = sI;
+            }   
 
-                if(bestPropability < propability)
-                {
-                    //console.log("kurwa")
-                    bestPropability = propability;
+            // Clear the firt move
+            this.tile = this.scene.boardArray[j][i];
+            this.tile.PawnBase = null;
+            this.scene.boardArray[j][i].bIsTaken = false;
 
-                    bestMove.x = j;
-                    bestMove.y = i;
-                    secondMoveBestMove.x = sJ;
-                    secondMoveBestMove.y = sI;
-                }
-                
-                
-                    this.tile = this.scene.boardArray[j][i];
-                    this.tile.PawnBase = null;
-                    this.scene.boardArray[j][i].bIsTaken = false;
-
-                    this.tile = this.scene.boardArray[sJ][sI];
-                    this.tile.PawnBase = null;
-                    this.scene.boardArray[sJ][sI].bIsTaken = false;
-                        
+            this.tile = this.scene.boardArray[sJ][sI];
+            this.tile.PawnBase = null;
+            this.scene.boardArray[sJ][sI].bIsTaken = false;              
         }
     }
+    
 
-   // console.log("Best move: x:" + bestMove.FtempJ + " y: " +bestMove.FtemiI);
+    // Play the best move
     this.tile = this.scene.boardArray[bestMove.x][bestMove.y];
     this.scene.boardArray[bestMove.x][bestMove.y].bIsTaken = true;
     this.scene.boardArray[bestMove.x][bestMove.y].bIsFinalTaken = true;
     this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'BlackPiece', this.scene.AI1);
 
-   // console.log("Second Best move: x:" + secondMoveBestMove.tempJ + " y: " +secondMoveBestMove.tempI);
     this.tile = this.scene.boardArray[secondMoveBestMove.x][secondMoveBestMove.y];
     this.scene.boardArray[secondMoveBestMove.x][secondMoveBestMove.y].bIsTaken = true;
     this.scene.boardArray[secondMoveBestMove.x][secondMoveBestMove.y].bIsFinalTaken = true;
     this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'WhitePiece', SecondPawnOwner);
-  
+    
     }
 }
 

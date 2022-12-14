@@ -282,7 +282,6 @@ export default class BoardScene extends Phaser.Scene
 						} 
                         this.AIvAIGame(FirstAI, SecondAI, "Montecarlo", bIsAlgorithTurn);       
                         break;
-
 			}
 			
         }
