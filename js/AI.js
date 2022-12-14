@@ -1124,16 +1124,7 @@ export default class AI
                 bestMove.y = i;
                 secondMoveBestMove.x = sJ;
                 secondMoveBestMove.y = sI;
-            }   
-
-            // Clear the firt move
-            this.tile = this.scene.boardArray[j][i];
-            this.tile.PawnBase = null;
-            this.scene.boardArray[j][i].bIsTaken = false;
-
-            this.tile = this.scene.boardArray[sJ][sI];
-            this.tile.PawnBase = null;
-            this.scene.boardArray[sJ][sI].bIsTaken = false;              
+            }              
         }
     }
     

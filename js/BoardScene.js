@@ -191,21 +191,7 @@ export default class BoardScene extends Phaser.Scene
 			}
 
         }
-        /*
-        CopyBoard(board)
-        {
-            let mapCopy = Array.from(Array(7), () => new Array(7));
-            for(let i = 0; i < 7; i++)
-            {
-                for(let j = 0; j < 7; j++)
-                {
-                    mapCopy[j][i] = [];
-                    mapCopy[j][i]["bIsTaken"] = board[j][i].bIsTaken;
-                }   
-            }
-            return mapCopy;
-        }
-        */
+
         AIvAIGame(FirstAI, SecondAI, AIType, bIsAlgorithTurn)
         {
             if(this.CheckHowManyMovesPossible() == 0)
@@ -424,23 +410,6 @@ export default class BoardScene extends Phaser.Scene
 			}	
 		}
 
-        /*
-        GoThroughBoardCountingScoreCopy(board)
-		{
-			var TempboardArray = Array.from(Array(7), () => new Array(7));
-			for(let y = 0; y <= 6; y++)
-			{
-				for(let x = 0; x <= 6; x++)
-				{
-					if(board[x][y].PawnBase != undefined && TempboardArray[x][y] != 1)
-					{
-						board[x][y].PawnBase.CheckScoreSetup(board[x][y],1,TempboardArray);	
-					}
-				}	
-			}	
-		}
-		*/
-        
         CheckIfAnyFreeTilesAround(TileX, TileY)
         {
             return (this.boardArray[TileX][TileY].bIsTaken == false && ((TileX+1 <= 6 && this.boardArray[TileX+1][TileY].bIsTaken == false) || 
@@ -448,15 +417,7 @@ export default class BoardScene extends Phaser.Scene
                     (TileY-1 >= 0 && this.boardArray[TileX][TileY-1].bIsTaken == false) || 
                     (TileY+1 <= 6 && this.boardArray[TileX][TileY+1].bIsTaken == false)))
         }
-        /*
-        CheckIfAnyFreeTilesAroundCopy(board, TileX, TileY)
-        {
-            return ((TileX+1 <= 6 && board[TileX+1][TileY].bIsTaken == false) || 
-                    (TileX-1 >= 0 && board[TileX-1][TileY].bIsTaken == false) || 
-                    (TileY-1 >= 0 && board[TileX][TileY-1].bIsTaken == false) || 
-                    (TileY+1 <= 6 && board[TileX][TileY+1].bIsTaken == false))
-        }
-        */
+
         CheckHowManyMovesPossible()
         {
         let numberOfMovesLeft = 0;
@@ -475,27 +436,7 @@ export default class BoardScene extends Phaser.Scene
             }
         return numberOfMovesLeft;
         }
-        
-        /*
-        CheckHowManyMovesPossibleCopy(board)
-        {
-            let numberOfMovesLeft = 0;
-                for(let i = 0; i < 7; i++)
-                {
-                    for(let j = 0; j < 7; j++)
-                    {
-                        if(board[j][i].bIsTaken == false)
-                        {
-                            if(this.CheckIfAnyFreeTilesAroundCopy(board,j,i)) 
-                           {
-                             numberOfMovesLeft++;
-                           } 
-                        }   
-                    }
-                }
-            return numberOfMovesLeft;
-        }
-        */
+
         getNumberOfAI()
         {
             return this.numberofAI;
