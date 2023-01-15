@@ -47,7 +47,7 @@ export default class AI
 					Player1 = this.scene.AI1;
 					Player2 = this.scene.AI2;
                 }
-                else if(this.scene.AIType == "Minimax" || this.scene.AIType == "Negamax"  || this.scene.AIType == "AlfaBeta" || this.scene.AIType == "Montecarlo")
+                else if(this.scene.AIType == "Minimax" || this.scene.AIType == "Negamax"  || this.scene.AIType == "AlfaBeta" || this.scene.AIType == "Montecarlo" || this.scene.AIType == "MonteCTS")
                 {
 					Player1 = this.scene.AI2;
 					Player2 = this.scene.AI1;
@@ -1141,7 +1141,277 @@ export default class AI
     this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'WhitePiece', SecondPawnOwner);
     
     }
+
+    // END OF MONTE CARLO AI
+    //----------------------------------------------------------------------------------------------------------------------------------------------
+    // START OF MONTE CARLO TREE SEARCH AI
+
+    MCTS(MCTS, OtherPlayer, iterationsToDo, board)
+    {
+        let iterations = 0;
+        let BaseNode = {
+            MCTSAI : null,
+            OtherAI : null,
+            base : true,
+            closed : false,
+            childrens : [],
+            parrent : null,
+            myMove : {x:0, y:0},
+            nextIndex : {x:0, y:0},
+            boardSize : {x: 7, y : 7},
+            maximalizeFor : null,
+            wins : 0,
+            games : 0,
+            
+            Innit: function(maximalizeFor, board, x, y, parrent, child = true)
+            {
+                this.maximalizeFor = maximalizeFor
+                this.myMove = {x,y}
+                this.parrent = parrent
+                this.childrens = []
+                this.wins = 0
+                this.games = 0
+                this.nextIndex = {x:0,y:0}
+                this.closed = false
+                this.base = !child
+    
+                if(child)
+                {
+                    this.PlayBoard(MCTS, OtherPlayer, board);
+                }
+            },  
+            
+            Step: function(board)
+            {
+                if(!this.closed)
+                {
+                    while(!(this.scene.CheckIfAnyFreeTilesAroundOnBoard(this.nextIndex.x, this.nextIndex.y, board) && board[this.nextIndex.x][this.nextIndex.y].bIsFinalTaken == false))
+                    {
+                        this.GetNextIndex();
+                        if(this.closed) 
+                        {
+                            this.ExploreDeeper(board)
+                            return;
+                        }
+                    }
+                    let newObj = Object.create(BaseNode)
+                    newObj.Innit(MCTS, OtherPlayer, this.maximalizeFor, board, this.nextIndex.x, this.nextIndex.y, this);
+                    this.childrens.push(newObj);
+                    this.GetNextIndex();
+                }
+                else
+                {
+                    this.ExploreDeeper(board)
+                }
+            },
+            
+            ExploreDeeper : function(board)
+            {
+                if(!this.base)
+                {
+                    this.MarkMove(board, this.myMove.x, this.myMove.y, MCTS, OtherPlayer);
+                } 
+                let nextToExplore = {score : -1, toExplore : null}
+    
+                this.childrens.forEach(element => {
+                    let childValue = element.wins / element.games + 0.4 * Math.log(iterations) / element.games
+                    if(childValue > nextToExplore.score)
+                    {
+                        nextToExplore.score = childValue
+                        nextToExplore.toExplore = element
+                    }
+                });
+                if(nextToExplore.score != -1) 
+                {
+                    nextToExplore.toExplore.Step(board)
+                }
+                else if(this.currentPlayer == this.maximalizeFor)
+                {
+                    this.PropagateWins(true);
+                }
+                else
+                {
+                    this.PropagateWins(false);
+                }
+    
+                if(!this.base) this.UnMarkMove(board, this.myMove.x, this.myMove.y);
+                
+            },  
+            
+            GetNextIndex : function()
+            {
+                this.nextIndex.x++
+                if(this.nextIndex.x >= this.mapSize.x)
+                {
+                    this.nextIndex.x = 0
+                    this.nextIndex.y++
+                    if(this.nextIndex.y >= this.mapSize.y)
+                    {
+                        this.closed = true
+                    }
+                }
+            },   
+
+            PlayBoard : function(MCTS, OtherAI, board)
+            {
+                let nextPlayer = MCTS;
+                let moves 
+                let bMCTSTurn = false;
+
+                while(this.scene.CheckHowManyMovesPossible() > 0)
+                {
+                    if(bMCTSTurn)
+                    {
+                        moves = this.GetRandomMove(board);
+                        let move = moves.move
+                        this.MarkMove(board, move.x, move.y, MCTS, OtherAI);
+
+                        bMCTSTurn = false;
+                    }
+                    else if(bMCTSTurn == false)
+                    {
+                        moves = this.GetRandomMove(board);
+                        let move = moves.move
+                        this.MarkMove(board, move.x, move.y, OtherAI, MCTS);
+
+                        bMCTSTurn = true;
+                    }
+                    
+                if(nextPlayer == MCTS) this.PropagateWins(true)
+                else if(nextPlayer == OtherAI) this.PropagateWins(false)
+                }   
+            },
+
+            CheckIfAnyFreeTilesAroundOnBoard : function(TileX, TileY, board)
+            {
+                return (board[TileX][TileY].bIsTaken == false && ((TileX+1 <= 6 && board[TileX+1][TileY].bIsTaken == false) || 
+                (TileX-1 >= 0 && board[TileX-1][TileY].bIsTaken == false) || 
+                (TileY-1 >= 0 && board[TileX][TileY-1].bIsTaken == false) || 
+                (TileY+1 <= 6 && board[TileX][TileY+1].bIsTaken == false))) 
+            },
+
+            GetRandomMove : function(board)
+            {
+                let move = {x: 0, y:0}
+                do 
+                {
+                    move.x = Phaser.Math.Between(0, 6);
+                    move.y = Phaser.Math.Between(0, 6); 
+        
+                } while(!(this.scene.CheckIfAnyFreeTilesAroundOnBoard(move.j, move.i, board) && board[j][i].bIsFinalTaken == false))
+        
+                return move;
+            },
+            
+            MarkMove : function(board, moveX, moveY, player, otherPlayer)
+            {
+    
+                this.tile = board[moveX][moveY];
+                board[moveX][moveY].bIsTaken = true;
+                this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, '1', player);
+                
+                let bIsFPlaced = false;
+                do
+                {
+                    let randomNum = Phaser.Math.Between(0, 3);
+                    switch (randomNum) 
+                    {
+                        case 0:
+                            cordFIf = (moveY+1 <= 6);
+                            sJ = (moveX);
+                            sI = (moveY+1);
+                            break;
+                        case 1:
+                            cordFIf = (moveY-1 >= 0);
+                            sJ = (moveX);
+                            sI = (moveY-1);
+                            break;
+                        case 2:
+                            cordFIf = (moveX+1 <= 6);
+                            sJ = (moveX+1);
+                            sI = (moveY);
+                            break;
+                        case 3:
+                            cordFIf = (moveX-1 >= 0);
+                            sJ = (moveX-1);
+                            sI = (moveY);
+                            break;    
+                    }
+                        if(cordFIf && (board[sJ][sI].bIsTaken == false))
+                        {
+                            this.tile = board[sJ][sI];
+                            board[sJ][sI].bIsTaken = true;       
+                            this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, '1', otherPlayer);
+                            this.SaveSecondRandomMove(sJ, sI);
+                            bIsFPlaced = true;	
+                        }   
+                } while(bIsFPlaced != true)   
+            },
+
+            SaveSecondRandomMove : function(SecondMoveX, SecondMoveY)
+            {
+                SecondMove.x = SecondMoveX;
+                SecondMove.y = SecondMoveY;
+            },   
+            
+        
+            getSecondRandomMove : function()
+            {
+                return this.SecondMove;
+            },
+
+            UnMarkMove : function(board, moveX, moveY)
+            {
+                this.tile = board[moveX][moveY];
+                this.tile.PawnBase = null;
+                board[moveX][moveY].bIsTaken = false;   
+    
+                this.tile = board[this.getSecondRandomMove().x][this.getSecondRandomMove().y];
+                this.tile.PawnBase = null;
+                board[this.getSecondRandomMove().x][this.getSecondRandomMove().y].bIsTaken = false;
+            },
+            
+            PropagateWins : function(win)
+            {
+                if(win) this.wins++
+                this.games++
+                if(!this.base)this.parrent.PropagateWins(win)
+            },
+            
+            GetBestMove()
+            {
+                let nextToExplore = {score : -1, toExplore : null}
+    
+                this.childrens.forEach(element => {
+                    if(element.wins / element.games > nextToExplore.score)
+                    {
+                        nextToExplore.score = element.wins / element.games
+                        nextToExplore.toExplore = element
+                    }
+                });
+    
+                return nextToExplore.toExplore.myMove
+            }    
+
+        }
+        let newObj = Object.create(BaseNode)
+        newObj.Innit(MCTS, otherPlayer, board, -1, -1, null, false);
+        for(let i = 0; i < iterationsToDo; i++){
+            iterations++
+            let copy = this.scene.CopyBoard(board);
+            newObj.Step(copy);
+        }
+        let bestMove = newObj.GetBestMove()
+
+        this.tile = this.scene.boardArray[bestMove.x][bestMove.y];
+        this.scene.boardArray[bestMove.x][bestMove.y].bIsTaken = true;
+        this.scene.boardArray[bestMove.x][bestMove.y].bIsFinalTaken = true;
+        this.tile.PawnBase = new PawnBase(this.scene, this.tile.XOffset, this.tile.YOffset, 'BlackPiece', this.scene.AI1); 
+    }
 }
+
+
+
 
 
 
